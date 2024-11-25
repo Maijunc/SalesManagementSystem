@@ -1,0 +1,97 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
+<%@ page import="com.dgut.salesmanagementsystem.pojo.Customer" %>
+<%@ page import="com.dgut.salesmanagementsystem.model.CustomerDAO" %>
+<!-- 导入 Customer 类 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>客户管理</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>客户管理系统</h1>
+</header>
+<main>
+  <!-- 查询客户 -->
+  <form method="GET" action="../CustomerController">
+    <input type="text" name="searchKeyword" placeholder="请输入客户名称或联系人">
+    <button type="submit">查询</button>
+    <a href="add_customer.jsp"><button type="button">新增客户</button></a>
+  </form>
+
+  <!-- 客户列表 -->
+  <table border="1" style="width: 100%; margin-top: 20px;">
+    <thead>
+    <tr>
+      <th>客户ID</th>
+      <th>客户名称</th>
+      <th>联系人</th>
+      <th>电话</th>
+      <th>邮箱</th>
+      <th>地址</th>
+      <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <%
+      Integer currentPageObj = (Integer) request.getAttribute("currentPage");
+      List<Customer> customerList;
+      if(currentPageObj == null) {
+        CustomerDAO customerDAO = new CustomerDAO();
+        customerList = customerDAO.searchCustomers("", 1, 6);
+      }
+      else {
+        customerList = (List<Customer>) request.getAttribute("customerList");
+      }
+      if (customerList != null && !customerList.isEmpty()) {
+        for (Customer customer : customerList) {
+    %>
+    <tr>
+      <td><%= customer.getCustomerID() %></td>
+      <td><%= customer.getCustomerName() %></td>
+      <td><%= customer.getContactPerson() %></td>
+      <td><%= customer.getPhone() %></td>
+      <td><%= customer.getEmail() %></td>
+      <td><%= customer.getAddress() %></td>
+      <td>
+        <a href="edit_customer.jsp?customerId=<%= customer.getCustomerID() %>">修改</a>
+        |
+        <a href="../CustomerController?action=delete&customerID=<%= customer.getCustomerID() %>"
+           onclick="return confirm('确认删除该客户吗？')">删除</a>
+      </td>
+    </tr>
+    <%
+      }
+    } else {
+    %>
+    <tr>
+      <td colspan="7">暂无客户信息</td>
+    </tr>
+    <%
+      }
+    %>
+    </tbody>
+  </table>
+
+  <!-- 分页导航 -->
+  <div style="margin-top: 20px;">
+    <%
+//      Integer currentPageObj = (Integer) request.getAttribute("currentPage");
+      Integer totalPagesObj = (Integer) request.getAttribute("totalPages");
+
+      // If the attributes are null, set default values
+      int currentPage = (currentPageObj != null) ? currentPageObj : 1;  // default to 1 if null
+      int totalPages = (totalPagesObj != null) ? totalPagesObj : 1;  // default to 1 if null
+    %>
+    <a href="CustomerController?pageNum=<%= currentPage - 1 %>&searchKeyword=<%= request.getParameter("searchKeyword") %>"
+            <%= (currentPage == 1) ? "style='pointer-events: none; color: gray;'" : "" %>>上一页</a>
+    第 <%= currentPage %> 页 / 共 <%= totalPages %> 页
+    <a href="CustomerController?pageNum=<%= currentPage + 1 %>&searchKeyword=<%= request.getParameter("searchKeyword") %>"
+            <%= (currentPage == totalPages) ? "style='pointer-events: none; color: gray;'" : "" %>>下一页</a>
+  </div>
+</main>
+</body>
+</html>

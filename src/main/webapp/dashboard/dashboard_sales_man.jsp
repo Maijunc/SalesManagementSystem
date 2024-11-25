@@ -1,11 +1,12 @@
+<%@ page import="com.dgut.salesmanagementsystem.pojo.User" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" %>
-<%--<%--%>
-<%--    User user = (User) session.getAttribute("user");--%>
-<%--    if (user == null || !"SalesPerson".equals(user.getRole())) {--%>
-<%--        response.sendRedirect("login.jsp");--%>
-<%--        return;--%>
-<%--    }--%>
-<%--%>--%>
+<%
+    User user = (User) session.getAttribute("user");
+    if (user == null || !"SalesMan".equals(user.getRole().getRole())) {
+        response.sendRedirect("../login.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head>
