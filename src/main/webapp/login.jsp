@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>登录 - 销售管理系统</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/login.css">
 </head>
 <body>
 <div class="login-container">

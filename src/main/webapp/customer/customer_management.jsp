@@ -8,7 +8,7 @@
 <head>
   <meta charset="UTF-8">
   <title>客户管理</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../css/customer-outside.css">
 </head>
 <body>
 <header>
@@ -23,7 +23,7 @@
   </form>
 
   <!-- 客户列表 -->
-  <table border="1" style="width: 100%; margin-top: 20px;">
+  <table>
     <thead>
     <tr>
       <th>客户ID</th>
@@ -60,7 +60,7 @@
         <a href="edit_customer.jsp?customerId=<%= customer.getCustomerID() %>">修改</a>
         |
         <a href="../CustomerController?action=delete&customerID=<%= customer.getCustomerID() %>"
-           onclick="return confirm('确认删除该客户吗？')">删除</a>
+           class="delete" onclick="return confirm('确认删除该客户吗？')">删除</a>
       </td>
     </tr>
     <%
@@ -77,14 +77,12 @@
   </table>
 
   <!-- 分页导航 -->
-  <div style="margin-top: 20px;">
+  <div class="pagination">
     <%
-//      Integer currentPageObj = (Integer) request.getAttribute("currentPage");
+      //      Integer currentPageObj = (Integer) request.getAttribute("currentPage");
       Integer totalPagesObj = (Integer) request.getAttribute("totalPages");
-
-      // If the attributes are null, set default values
-      int currentPage = (currentPageObj != null) ? currentPageObj : 1;  // default to 1 if null
-      int totalPages = (totalPagesObj != null) ? totalPagesObj : 1;  // default to 1 if null
+      int currentPage = (currentPageObj != null) ? currentPageObj : 1;
+      int totalPages = (totalPagesObj != null) ? totalPagesObj : 1;
     %>
     <a href="CustomerController?pageNum=<%= currentPage - 1 %>&searchKeyword=<%= request.getParameter("searchKeyword") %>"
             <%= (currentPage == 1) ? "style='pointer-events: none; color: gray;'" : "" %>>上一页</a>
@@ -95,3 +93,4 @@
 </main>
 </body>
 </html>
+
