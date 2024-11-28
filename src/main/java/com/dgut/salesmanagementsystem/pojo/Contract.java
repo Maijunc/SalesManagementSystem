@@ -9,7 +9,8 @@ public class Contract {
      小数点我们项目中用的是2, 保留2位小数. 此外还要注意的就是默认值,
      一定写成0.00, 不要用默认的NULL, 否则在进行加减排序等操作时, 会带来转换的麻烦!
     */
-    private Integer contractId;  // 合同ID
+    private Integer contractID;  // 合同ID
+    private String contractName; // 合同名称
     private Date contractDate;   // 合同签订日期
     private Date startDate;      // 合同开始日期
     private Date endDate;        // 合同结束日期
@@ -17,15 +18,15 @@ public class Contract {
     private BigDecimal totalAmount; // 合同总金额
     private BigDecimal paidAmount;  // 已付款金额
     private BigDecimal remainingAmount; // 未付款金额
-    private Integer customerId;    // 客户ID
-    private Integer salesmanId;    // 销售人员ID
+    private Integer customerID;    // 客户ID
+    private Integer salesmanID;    // 销售人员ID
 
-    public Integer getContractId() {
-        return contractId;
+    public Integer getContractID() {
+        return contractID;
     }
 
-    public void setContractId(Integer contractId) {
-        this.contractId = contractId;
+    public void setContractID(Integer contractID) {
+        this.contractID = contractID;
     }
 
     public Date getContractDate() {
@@ -84,19 +85,27 @@ public class Contract {
         this.remainingAmount = remainingAmount;
     }
 
-    public Integer getCustomerId() {
-        return customerId;
+    public Integer getCustomerID() {
+        return customerID;
     }
 
-    public void setCustomerId(Integer customerId) {
-        this.customerId = customerId;
+    public void setCustomerID(Integer customerID) {
+        this.customerID = customerID;
     }
 
-    public Integer getSalesmanId() {
-        return salesmanId;
+    public Integer getSalesmanID() {
+        return salesmanID;
     }
 
-    public void setSalesmanId(Integer salesmanId) {
-        this.salesmanId = salesmanId;
+    public void setSalesmanID(Integer salesmanID) {
+        this.salesmanID = salesmanID;
+    }
+
+    public String getContractName() {
+        return contractName;
+    }
+
+    public void setContractName(String contractName) {
+        this.contractName = contractName;
     }
 }

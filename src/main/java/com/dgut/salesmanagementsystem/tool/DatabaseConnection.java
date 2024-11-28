@@ -8,6 +8,7 @@ public class DatabaseConnection {
     private static final String DB_URL = "jdbc:mysql://localhost:3306/SalesManagementSystemDB";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "123456";
+
     public static Connection getConnection() throws Exception {
         // 加载驱动
         Class.forName("com.mysql.cj.jdbc.Driver");

@@ -4,7 +4,7 @@ public enum Role {
     WAREHOUSE_MANAGER("WarehouseManager"),
     SALES_MAN("SalesMan");
 
-    private String role;
+    private final String role;
 
     Role(String role) {
         this.role = role;
