@@ -29,7 +29,7 @@ public class CustomerService {
         customerDAO.updateCustomer(customer);
     }
 
-    public int getTotalPage(String searchKeyword,int pageSize) {
+    public int getTotalPages(String searchKeyword,int pageSize) {
 
         int totalRecords = customerDAO.countCustomers(searchKeyword);
         int totalPages = (int) Math.ceil((double) totalRecords / pageSize);

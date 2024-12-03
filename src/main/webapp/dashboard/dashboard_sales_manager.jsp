@@ -17,7 +17,7 @@
 <h1>欢迎, 销售管理员</h1>
 <nav>
   <a href="../CustomerController?pageNum=1&searchKeyword=">客户管理</a>
-  <a href="../contract/manage_contracts.jsp">合同管理</a>
+  <a href="../ContractController?pageNum=1">合同管理</a>
   <a href="../contract/manage_contracts.jsp">销售人员管理</a>
   <a href="view_sales_statistics.jsp">销售统计</a>
   <a href="../logout.jsp">退出登录</a>

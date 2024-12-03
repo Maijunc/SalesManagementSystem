@@ -20,7 +20,9 @@ public class ContractService {
         return contractDAO.searchContracts(contractSearchCriteria, pageNum, pageSize);
     }
 
-    public int countCustomers(ContractSearchCriteria contractSearchCriteria) {
-        return contractDAO.countCustomers(contractSearchCriteria);
+    public int getTotalPages(ContractSearchCriteria contractSearchCriteria, int pageSize) {
+        int totalRecords = contractDAO.countCustomers(contractSearchCriteria);
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+        return totalPages = totalPages > 0 ? totalPages : 1;
     }
 }

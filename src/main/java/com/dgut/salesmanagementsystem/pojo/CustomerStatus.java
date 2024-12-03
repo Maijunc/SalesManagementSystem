@@ -28,4 +28,17 @@ public enum CustomerStatus {
                 throw new IllegalArgumentException("Invalid status code: " + status);
         }
     }
+
+    public static int getIndexByValue(String value)
+    {
+        // Java 后端示例
+        if ("Active".equals(value)) {
+            return 1;
+        } else if ("Paused".equals(value)) {
+            return 2;
+        } else if ("Blacklisted".equals(value)) {
+            return 3;
+        }
+        throw new IllegalArgumentException("Invalid value string: " + value);
+    }
 }

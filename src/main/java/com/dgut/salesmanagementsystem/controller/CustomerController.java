@@ -40,7 +40,7 @@ public class CustomerController extends HttpServlet {
 
             List<Customer> customerList = customerService.searchCustomers(searchKeyword, pageNum, pageSize);
             // 获取总记录数以计算总页数
-            int totalPages = customerService.getTotalPage(searchKeyword, pageSize);
+            int totalPages = customerService.getTotalPages(searchKeyword, pageSize);
             // 设置分页相关属性
             HttpSession session = req.getSession();
             session.setAttribute("customerList", customerList);
@@ -70,21 +70,40 @@ public class CustomerController extends HttpServlet {
             customer.setCountry(req.getParameter("country"));
             // 这里得到的是序号“1”、“2”
             String customerTypeStr = req.getParameter("customerType");
-            customer.setCustomerType(CustomerType.fromInt(Integer.parseInt(customerTypeStr)).getValue());
+            if(customerTypeStr != null && !customerTypeStr.isEmpty())
+                customer.setCustomerType(CustomerType.fromInt(Integer.parseInt(customerTypeStr)).getValue());
             // 这里得到的是序号“1”、“2”、“3”
             String customerStatusStr = req.getParameter("customerStatus");
-            customer.setCustomerStatus(CustomerStatus.fromInt(Integer.parseInt(customerStatusStr)).getValue());
+            if(customerStatusStr != null && !customerStatusStr.isEmpty())
+                customer.setCustomerStatus(CustomerStatus.fromInt(Integer.parseInt(customerStatusStr)).getValue());
             customerService.addCustomer(customer);
+
+            resp.sendRedirect("CustomerController?pageNum=1");
         } else if ("edit".equals(action)) {
+            int pageNum = req.getParameter("pageNum") == null ? 1 : Integer.parseInt(req.getParameter("pageNum"));
+            String searchKeyword = req.getParameter("searchKeyword");
+
             Customer customer = new Customer();
-            customer.setCustomerID(Integer.parseInt(req.getParameter("customerId")));
+            customer.setCustomerID(Integer.parseInt(req.getParameter("customerID")));
             customer.setCustomerName(req.getParameter("customerName"));
             customer.setContactPerson(req.getParameter("contactPerson"));
             customer.setPhone(req.getParameter("phone"));
             customer.setEmail(req.getParameter("email"));
             customer.setAddress(req.getParameter("address"));
+            customer.setCity(req.getParameter("city"));
+            customer.setPostalCode(req.getParameter("postalCode"));
+            customer.setCountry(req.getParameter("country"));
+            // 这里得到的是序号“1”、“2”
+            String customerTypeStr = req.getParameter("customerType");
+            if(customerTypeStr != null && !customerTypeStr.isEmpty())
+                customer.setCustomerType(CustomerType.fromInt(Integer.parseInt(customerTypeStr)).getValue());
+            // 这里得到的是序号“1”、“2”、“3”
+            String customerStatusStr = req.getParameter("customerStatus");
+            if(customerStatusStr != null && !customerStatusStr.isEmpty())
+                customer.setCustomerStatus(CustomerStatus.fromInt(Integer.parseInt(customerStatusStr)).getValue());
             customerService.updateCustomer(customer);
+
+            resp.sendRedirect("CustomerController?pageNum=" + pageNum + "&searchKeyword=" + searchKeyword);
         }
-        resp.sendRedirect("customer/customer_management.jsp");
     }
 }

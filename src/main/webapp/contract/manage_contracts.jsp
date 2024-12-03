@@ -23,7 +23,7 @@
     </div>
 
     <!-- 搜索表单 -->
-    <form action="../ContractController" method="post" id="search-form">
+    <form action="../ContractController" method="get" id="search-form">
         <div class="form-group">
             <label for="contractName">合同名称：</label>
             <input type="text" id="contractName" name="contractName">
@@ -71,19 +71,18 @@
         </thead>
         <tbody>
         <%
-            Integer pageSizeObj = (Integer) request.getAttribute("pageSize");
             List<Contract> contractList;
-            if (pageSizeObj == null) {
-                ContractDAO contractDAO = new ContractDAO();
-                contractList = contractDAO.searchContracts(new ContractSearchCriteria(), 1, 6);
-            } else {
-                contractList = (List<Contract>) request.getAttribute("contractList");
-            }
+            contractList = (List<Contract>) session.getAttribute("contractList");
+            Integer pageSizeObj = (Integer) session.getAttribute("pageSize");
+            Integer currentPageObj = (Integer) session.getAttribute("currentPage");
+            Integer totalPagesObj = (Integer) session.getAttribute("totalPages");
             CustomerDAO customerDAO = new CustomerDAO();
-            Integer currentPageObj = (Integer) request.getAttribute("currentPage");
-            Integer totalPagesObj = (Integer) request.getAttribute("totalPages");
+
             int currentPage = (currentPageObj != null) ? currentPageObj : 1;
             int totalPages = (totalPagesObj != null) ? totalPagesObj : 1;
+            if(totalPagesObj == null) {
+                System.err.println("ERROR!!! have not parameter:\"totalPagesObj\"");
+            }
             int pageSize = (pageSizeObj != null) ? pageSizeObj : 6;
             int cnt = 0;
             if (contractList != null && !contractList.isEmpty()) {
@@ -133,17 +132,21 @@
 
     <!-- 分页 -->
     <div class="pagination">
-        <a href="CustomerController?pageNum=<%= currentPage - 1 %>&searchKeyword=<%= request.getParameter("searchKeyword") %>"
+        <a href="ContractController?pageNum=<%= currentPage - 1 %>&contractName=<%= session.getAttribute("contractName") %>
+        &contractID=<%= session.getAttribute("contractName")%>&status=<%= session.getAttribute("status")%>
+         &start_time=<%= session.getAttribute("start_time")%> &end_time=<%= session.getAttribute("end_time")%>>"
                 <%= (currentPage == 1) ? "style='pointer-events: none; color: gray;'" : "" %>>上一页</a>
         第 <%= currentPage %> 页 / 共 <%= totalPages %> 页
-        <a href="CustomerController?pageNum=<%= currentPage + 1 %>&searchKeyword=<%= request.getParameter("searchKeyword") %>"
-                <%= (currentPage == totalPages) ? "style='pointer-events: none; color: gray;'" : "" %>>下一页</a>
+        <a href="ContractController?pageNum=<%= currentPage + 1 %>&contractName=<%= session.getAttribute("contractName") %>
+        &contractID=<%= session.getAttribute("contractName")%>&status=<%= session.getAttribute("status")%>
+         &start_time=<%= session.getAttribute("start_time")%> &end_time=<%= session.getAttribute("end_time")%>>"
+                <%= (currentPage == 1) ? "style='pointer-events: none; color: gray;'" : "" %>>上一页</a>
     </div>
 </div>
 
 <script>
     function goBack() {
-        window.history.back();
+        window.location.href="../dashboard/dashboard_sales_manager.jsp"
     }
 
     function logout() {

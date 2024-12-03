@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.dgut.salesmanagementsystem.pojo.Customer" %>
 <%@ page import="com.dgut.salesmanagementsystem.model.CustomerDAO" %>
+<%@ page import="com.dgut.salesmanagementsystem.pojo.CustomerType" %>
+<%@ page import="com.dgut.salesmanagementsystem.pojo.CustomerStatus" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,28 +16,30 @@
 </header>
 <main>
   <%
-    int customerId = Integer.parseInt(request.getParameter("customerId"));
+    int customerId = Integer.parseInt(request.getParameter("customerID"));
     CustomerDAO customerDAO = new CustomerDAO();
     Customer customer = customerDAO.getCustomerById(customerId);
   %>
   <form method="POST" action="../CustomerController" class="form-container">
     <input type="hidden" name="action" value="edit">
-    <input type="hidden" name="customerId" value="<%= customer.getCustomerID() %>">
+    <input type="hidden" name="pageNum" value=<%= request.getParameter("pageNum")%>>
+    <input type="hidden" name="searchKeyword" value=<%= request.getParameter("searchKeyword")%>>
+    <input type="hidden" name="customerID" value="<%= customer.getCustomerID() %>">
     <div class="form-group">
       <label for="customerName">客户名称:</label>
       <input type="text" id="customerName" name="customerName" value="<%= customer.getCustomerName() %>" required>
     </div>
     <div class="form-group">
       <label for="contactPerson">联系人:</label>
-      <input type="text" id="contactPerson" name="contactPerson" value="<%= customer.getContactPerson() %>" required>
+      <input type="text" id="contactPerson" name="contactPerson" value="<%= customer.getContactPerson() %>" >
     </div>
     <div class="form-group">
       <label for="phone">电话:</label>
-      <input type="text" id="phone" name="phone" value="<%= customer.getPhone() %>" required>
+      <input type="text" id="phone" name="phone" value="<%= customer.getPhone() %>" >
     </div>
     <div class="form-group">
       <label for="email">邮箱:</label>
-      <input type="email" id="email" name="email" value="<%= customer.getEmail() %>" required>
+      <input type="email" id="email" name="email" value="<%= customer.getEmail() %>" >
     </div>
     <div class="form-group">
       <label for="address">地址:</label>
@@ -55,17 +59,17 @@
     </div>
     <div class="form-group">
       <label for="customerType">客户类型：</label>
-      <select id="customerType" name="customerType" value="<%= customer.getCustomerType()%>">
-        <option value="1">个人</option>
-        <option value="2">企业</option>
+      <select id="customerType" name="customerType" selectedIndex="">
+        <option value="1" <%= CustomerType.getIndexByValue(customer.getCustomerType()) == 1 ? "selected" : "" %>>个人</option>
+        <option value="2" <%= CustomerType.getIndexByValue(customer.getCustomerType()) == 2 ? "selected" : "" %>>企业</option>
       </select>
     </div>
     <div class="form-group">
       <label for="customerStatus">客户类型：</label>
       <select id="customerStatus" name="customerStatus">
-        <option value="1">活跃</option>
-        <option value="2">暂停</option>
-        <option value="3">黑名单</option>
+        <option value="1" <%= CustomerStatus.getIndexByValue(customer.getCustomerStatus()) == 1 ? "selected" : "" %>>活跃</option>
+        <option value="2" <%= CustomerStatus.getIndexByValue(customer.getCustomerStatus()) == 2 ? "selected" : "" %>>暂停</option>
+        <option value="3" <%= CustomerStatus.getIndexByValue(customer.getCustomerStatus()) == 3 ? "selected" : "" %>>黑名单</option>
       </select>
     </div>
     <div class="form-actions">

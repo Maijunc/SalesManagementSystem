@@ -43,6 +43,8 @@
       customerList = (List<Customer>) session.getAttribute("customerList");
       Integer currentPageObj = (Integer) session.getAttribute("currentPage");
       Integer totalPagesObj = (Integer) session.getAttribute("totalPages");
+      int currentPage = (currentPageObj != null) ? currentPageObj : 1;
+      int totalPages = (totalPagesObj != null) ? totalPagesObj : 1;
 
       if (customerList != null && !customerList.isEmpty()) {
         for (Customer customer : customerList) {
@@ -55,7 +57,8 @@
       <td><%= customer.getEmail() %></td>
       <td><%= customer.getAddress() %></td>
       <td>
-        <a href="edit_customer.jsp?customerId=<%= customer.getCustomerID() %>">修改</a>
+        <a href="edit_customer.jsp?customerID=<%= customer.getCustomerID() %>&pageNum=<%= currentPage%>
+        &searchKeyword=<%= session.getAttribute("searchKeyword") %>>">修改</a>
         |
         <a href="../CustomerController?action=delete&customerID=<%= customer.getCustomerID() %>"
            class="delete" onclick="return confirm('确认删除该客户吗？')">删除</a>
@@ -76,10 +79,6 @@
 
   <!-- 分页导航 -->
   <div class="pagination">
-    <%
-      int currentPage = (currentPageObj != null) ? currentPageObj : 1;
-      int totalPages = (totalPagesObj != null) ? totalPagesObj : 1;
-    %>
     <a href="../CustomerController?pageNum=<%= currentPage - 1 %>&searchKeyword=<%= session.getAttribute("searchKeyword") %>"
             <%= (currentPage == 1) ? "style='pointer-events: none; color: gray;'" : "" %>>上一页</a>
     第 <%= currentPage %> 页 / 共 <%= totalPages %> 页
