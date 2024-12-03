@@ -17,8 +17,6 @@ public class Customer {
     private String postalCode;          // 邮政编码
     private String country;             // 国家/地区
 
-    private String salesRep;           // 负责客户的销售人员
-
     // 客户状态信息
     private String customerType;        // 客户类型 (Individual 或 Company)
     private String customerStatus;      // 客户状态 (Active, Paused, Blacklisted)
@@ -65,10 +63,6 @@ public class Customer {
 
     public String getCountry() {
         return country;
-    }
-
-    public String getSalesRep() {
-        return salesRep;
     }
 
     public String getCustomerType() {
@@ -129,10 +123,6 @@ public class Customer {
 
     public void setCountry(String country) {
         this.country = country;
-    }
-
-    public void setSalesRep(String salesRep) {
-        this.salesRep = salesRep;
     }
 
     public void setCustomerType(String customerType) {

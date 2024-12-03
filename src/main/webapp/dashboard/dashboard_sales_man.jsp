@@ -18,7 +18,7 @@
 <nav>
     <a href="view_sales_performance.jsp">销售业绩</a>
     <a href="view_contracts.jsp">合同执行情况</a>
-    <a href="logout.jsp">退出登录</a>
+    <a href="../logout.jsp">退出登录</a>
 </nav>
 </body>
 </html>

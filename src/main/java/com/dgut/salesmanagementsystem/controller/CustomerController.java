@@ -2,12 +2,15 @@ package com.dgut.salesmanagementsystem.controller;
 
 import com.dgut.salesmanagementsystem.model.CustomerDAO;
 import com.dgut.salesmanagementsystem.pojo.Customer;
+import com.dgut.salesmanagementsystem.pojo.CustomerStatus;
+import com.dgut.salesmanagementsystem.pojo.CustomerType;
 import com.dgut.salesmanagementsystem.service.CustomerService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,15 +40,18 @@ public class CustomerController extends HttpServlet {
 
             List<Customer> customerList = customerService.searchCustomers(searchKeyword, pageNum, pageSize);
             // 获取总记录数以计算总页数
-            int totalRecords = customerService.countCustomers(searchKeyword);
-            int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
-            totalPages = totalPages > 0 ? totalPages : 1;
+            int totalPages = customerService.getTotalPage(searchKeyword, pageSize);
             // 设置分页相关属性
-            req.setAttribute("customerList", customerList);
-            req.setAttribute("currentPage", pageNum);
-            req.setAttribute("totalPages", totalPages);
+            HttpSession session = req.getSession();
+            session.setAttribute("customerList", customerList);
+            session.setAttribute("currentPage", pageNum);
+            session.setAttribute("totalPages", totalPages);
+            session.setAttribute("searchKeyword", searchKeyword);
 
-            req.getRequestDispatcher("customer/customer_management.jsp").forward(req, resp);
+            resp.sendRedirect("customer/customer_management.jsp");
+            // 不能用getRequestDispatcher，不然地址不会改变，还是在Controller这里
+//            req.getRequestDispatcher("/customer/customer_management.jsp").forward(req, resp);
+            System.out.println("Controller Called");
         }
     }
 
@@ -59,6 +65,15 @@ public class CustomerController extends HttpServlet {
             customer.setPhone(req.getParameter("phone"));
             customer.setEmail(req.getParameter("email"));
             customer.setAddress(req.getParameter("address"));
+            customer.setCity(req.getParameter("city"));
+            customer.setPostalCode(req.getParameter("postalCode"));
+            customer.setCountry(req.getParameter("country"));
+            // 这里得到的是序号“1”、“2”
+            String customerTypeStr = req.getParameter("customerType");
+            customer.setCustomerType(CustomerType.fromInt(Integer.parseInt(customerTypeStr)).getValue());
+            // 这里得到的是序号“1”、“2”、“3”
+            String customerStatusStr = req.getParameter("customerStatus");
+            customer.setCustomerStatus(CustomerStatus.fromInt(Integer.parseInt(customerStatusStr)).getValue());
             customerService.addCustomer(customer);
         } else if ("edit".equals(action)) {
             Customer customer = new Customer();

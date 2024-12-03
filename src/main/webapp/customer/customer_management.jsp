@@ -2,6 +2,8 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.dgut.salesmanagementsystem.pojo.Customer" %>
 <%@ page import="com.dgut.salesmanagementsystem.model.CustomerDAO" %>
+<%@ page import="com.dgut.salesmanagementsystem.controller.CustomerController" %>
+<%@ page import="com.dgut.salesmanagementsystem.model.UserDAO" %>
 <!-- 导入 Customer 类 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -37,15 +39,11 @@
     </thead>
     <tbody>
     <%
-      Integer currentPageObj = (Integer) request.getAttribute("currentPage");
       List<Customer> customerList;
-      if(currentPageObj == null) {
-        CustomerDAO customerDAO = new CustomerDAO();
-        customerList = customerDAO.searchCustomers("", 1, 6);
-      }
-      else {
-        customerList = (List<Customer>) request.getAttribute("customerList");
-      }
+      customerList = (List<Customer>) session.getAttribute("customerList");
+      Integer currentPageObj = (Integer) session.getAttribute("currentPage");
+      Integer totalPagesObj = (Integer) session.getAttribute("totalPages");
+
       if (customerList != null && !customerList.isEmpty()) {
         for (Customer customer : customerList) {
     %>
@@ -79,15 +77,13 @@
   <!-- 分页导航 -->
   <div class="pagination">
     <%
-      //      Integer currentPageObj = (Integer) request.getAttribute("currentPage");
-      Integer totalPagesObj = (Integer) request.getAttribute("totalPages");
       int currentPage = (currentPageObj != null) ? currentPageObj : 1;
       int totalPages = (totalPagesObj != null) ? totalPagesObj : 1;
     %>
-    <a href="CustomerController?pageNum=<%= currentPage - 1 %>&searchKeyword=<%= request.getParameter("searchKeyword") %>"
+    <a href="../CustomerController?pageNum=<%= currentPage - 1 %>&searchKeyword=<%= session.getAttribute("searchKeyword") %>"
             <%= (currentPage == 1) ? "style='pointer-events: none; color: gray;'" : "" %>>上一页</a>
     第 <%= currentPage %> 页 / 共 <%= totalPages %> 页
-    <a href="CustomerController?pageNum=<%= currentPage + 1 %>&searchKeyword=<%= request.getParameter("searchKeyword") %>"
+    <a href="../CustomerController?pageNum=<%= currentPage + 1 %>&searchKeyword=<%= session.getAttribute("searchKeyword") %>"
             <%= (currentPage == totalPages) ? "style='pointer-events: none; color: gray;'" : "" %>>下一页</a>
   </div>
 </main>

@@ -2,6 +2,7 @@ package com.dgut.salesmanagementsystem.controller;
 
 import com.dgut.salesmanagementsystem.pojo.Contract;
 import com.dgut.salesmanagementsystem.pojo.ContractSearchCriteria;
+import com.dgut.salesmanagementsystem.pojo.ContractStatus;
 import com.dgut.salesmanagementsystem.pojo.Customer;
 import com.dgut.salesmanagementsystem.service.ContractService;
 import jakarta.servlet.ServletException;
@@ -58,7 +59,7 @@ public class ContractController extends HttpServlet{
         ContractSearchCriteria criteria = new ContractSearchCriteria();
         criteria.setContractName(contractName != null && !contractName.isEmpty() ? contractName : null);
         criteria.setContractID(contractID); // 如果为空则不设置
-        criteria.setStatus(status != null && !status.isEmpty() ? status : null);
+        criteria.setStatus(status != null && !status.isEmpty() ? ContractStatus.fromInt(Integer.parseInt(status)).getValue() : null);
         criteria.setStartDateStr(startTimeStr != null && !startTimeStr.isEmpty() ? startTimeStr : null);
         criteria.setEndDateStr(endTimeStr != null && !endTimeStr.isEmpty() ? endTimeStr : null);
 
@@ -68,6 +69,7 @@ public class ContractController extends HttpServlet{
         req.setAttribute("totalPages", totalPages);
         req.setAttribute("pageSize", pageSize);
 
-        req.getRequestDispatcher("contract/manage_contracts.jsp").forward(req, resp);
+        resp.sendRedirect("ontract/manage_contracts.jsp");
+//        req.getRequestDispatcher("contract/manage_contracts.jsp").forward(req, resp);
     }
 }

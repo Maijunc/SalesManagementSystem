@@ -29,7 +29,11 @@ public class CustomerService {
         customerDAO.updateCustomer(customer);
     }
 
-    public int countCustomers(String searchKeyword) {
-        return customerDAO.countCustomers(searchKeyword);
+    public int getTotalPage(String searchKeyword,int pageSize) {
+
+        int totalRecords = customerDAO.countCustomers(searchKeyword);
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+        totalPages = totalPages > 0 ? totalPages : 1;
+        return totalPages;
     }
 }

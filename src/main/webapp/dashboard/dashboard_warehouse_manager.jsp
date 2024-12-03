@@ -19,7 +19,7 @@
   <a href="view_inventory.jsp">商品库存</a>
   <a href="manage_delivery_orders.jsp">发货管理</a>
   <a href="manage_purchase_orders.jsp">进货管理</a>
-  <a href="logout.jsp">退出登录</a>
+  <a href="../logout.jsp">退出登录</a>
 </nav>
 </body>
 </html>

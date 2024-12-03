@@ -19,19 +19,46 @@
     </div>
     <div class="form-group">
       <label for="contactPerson">联系人:</label>
-      <input type="text" id="contactPerson" name="contactPerson" required>
+      <input type="text" id="contactPerson" name="contactPerson">
     </div>
     <div class="form-group">
       <label for="phone">电话:</label>
-      <input type="text" id="phone" name="phone" required>
+      <input type="text" id="phone" name="phone">
     </div>
     <div class="form-group">
       <label for="email">邮箱:</label>
-      <input type="email" id="email" name="email" required>
+      <input type="email" id="email" name="email">
     </div>
     <div class="form-group">
       <label for="address">地址:</label>
       <input type="text" id="address" name="address">
+    </div>
+    <div class="form-group">
+      <label for="city">城市:</label>
+      <input type="text" id="city" name="city">
+    </div>
+    <div class="form-group">
+      <label for="postalCode">邮政编码:</label>
+      <input type="text" id="postalCode" name="postalCode">
+    </div>
+    <div class="form-group">
+      <label for="country">国家:</label>
+      <input type="text" id="country" name="country">
+    </div>
+    <div class="form-group">
+      <label for="customerType">客户类型：</label>
+      <select id="customerType" name="customerType">
+        <option value="1">个人</option>
+        <option value="2">企业</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="customerStatus">客户类型：</label>
+      <select id="customerStatus" name="customerStatus">
+        <option value="1">活跃</option>
+        <option value="2">暂停</option>
+        <option value="3">黑名单</option>
+      </select>
     </div>
     <div class="form-actions">
       <button type="submit" class="btn-primary">保存</button>

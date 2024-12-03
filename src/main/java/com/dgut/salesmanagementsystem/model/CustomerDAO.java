@@ -48,17 +48,24 @@ public class CustomerDAO {
         try {
             connection = DatabaseConnection.getConnection();
 
+            // 动态构建查询条件
+            List<Object> params = new ArrayList<>();  // 存储查询参数
+
             // 构建 SQL 查询语句
             String sql = "SELECT * FROM Customer WHERE customer_name LIKE ? " +
                     "OR contact_person LIKE ?" +
                     " LIMIT ? OFFSET ?";
             preparedStatement = connection.prepareStatement(sql);
 
-            // 设置参数
-            preparedStatement.setString(1, "%" + searchKeyword + "%"); // 模糊查询
-            preparedStatement.setString(2, "%" + searchKeyword + "%"); // 模糊查询
-            preparedStatement.setInt(3, pageSize);                    // 每页显示条数
-            preparedStatement.setInt(4, (pageNum - 1) * pageSize);    // 偏移量
+            params.add("%" + searchKeyword + "%"); // 模糊查询
+            params.add("%" + searchKeyword + "%"); // 模糊查询
+            params.add(pageSize);  // 每页显示条数
+            params.add((pageNum - 1) * pageSize); // 偏移量
+
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
 
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
@@ -72,7 +79,6 @@ public class CustomerDAO {
                 customer.setCity(resultSet.getString("city"));                   // 设置 city
                 customer.setPostalCode(resultSet.getString("postal_code"));      // 设置 postal_code
                 customer.setCountry(resultSet.getString("country"));             // 设置 country
-                customer.setSalesRep(resultSet.getString("sales_rep"));          // 设置 sales_rep
                 customer.setCustomerType(resultSet.getString("customer_type"));  // 设置 customer_type
                 customer.setCustomerStatus(resultSet.getString("customer_status")); // 设置 customer_status
                 customer.setCreatedDate(resultSet.getTimestamp("created_date")); // 设置 created_date
@@ -101,23 +107,30 @@ public class CustomerDAO {
             // 获取数据库连接
             connection = DatabaseConnection.getConnection();
 
+            // 动态构建查询条件
+            List<Object> params = new ArrayList<>();  // 存储查询参数
+
             String sql = "INSERT INTO Customer (customer_name, contact_person, phone, " +
                     "email, address, city, postal_code, country, " +
-                    "sales_rep, customer_type, customer_status) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                    "customer_type, customer_status) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
             preparedStatement = connection.prepareStatement(sql);
             // 设置参数值
-            preparedStatement.setString(1, customer.getCustomerName());         // customer_name
-            preparedStatement.setString(2, customer.getContactPerson());        // contact_person
-            preparedStatement.setString(3, customer.getPhone());                // phone
-            preparedStatement.setString(4, customer.getEmail());                // email
-            preparedStatement.setString(5, customer.getAddress());              // address
-            preparedStatement.setString(6, customer.getCity());                 // city
-            preparedStatement.setString(7, customer.getPostalCode());           // postal_code
-            preparedStatement.setString(8, customer.getCountry());              // country
-            preparedStatement.setString(9, customer.getSalesRep());             // sales_rep
-            preparedStatement.setString(10, customer.getCustomerType());       // customer_type
-            preparedStatement.setString(11, customer.getCustomerStatus());     // customer_status
+            params.add(customer.getCustomerName());
+            params.add(customer.getContactPerson());
+            params.add(customer.getPhone());
+            params.add(customer.getEmail());
+            params.add(customer.getAddress());
+            params.add(customer.getCity());
+            params.add(customer.getPostalCode());
+            params.add(customer.getCountry());
+            params.add(customer.getCustomerType());
+            params.add(customer.getCustomerStatus());
+
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
 
             preparedStatement.executeUpdate();
 
@@ -137,6 +150,9 @@ public class CustomerDAO {
     public void updateCustomer(Customer customer) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
+
+        // 动态构建查询条件
+        List<Object> params = new ArrayList<>();  // 存储查询参数
         try {
             // 获取数据库连接
             connection = DatabaseConnection.getConnection();
@@ -150,24 +166,30 @@ public class CustomerDAO {
                     "city = ?, " +
                     "postal_code = ?, " +
                     "country = ?, " +
-                    "sales_rep = ?, " +
                     "customer_type = ?, " +
                     "customer_status = ? " +
                     "WHERE customer_id = ?;";
             preparedStatement = connection.prepareStatement(sql);
             // 设置参数值
-            preparedStatement.setString(1, customer.getCustomerName());         // customer_name
-            preparedStatement.setString(2, customer.getContactPerson());        // contact_person
-            preparedStatement.setString(3, customer.getPhone());                // phone
-            preparedStatement.setString(4, customer.getEmail());                // email
-            preparedStatement.setString(5, customer.getAddress());              // address
-            preparedStatement.setString(6, customer.getCity());                 // city
-            preparedStatement.setString(7, customer.getPostalCode());           // postal_code
-            preparedStatement.setString(8, customer.getCountry());              // country
-            preparedStatement.setString(9, customer.getSalesRep());             // sales_rep
-            preparedStatement.setString(10, customer.getCustomerType());       // customer_type
-            preparedStatement.setString(11, customer.getCustomerStatus());     // customer_status
-            preparedStatement.setInt(12, customer.getCustomerID());            // customer_id (WHERE condition)
+
+            // 设置参数值
+            params.add(customer.getCustomerName());      // customer_name
+            params.add(customer.getContactPerson());     // contact_person
+            params.add(customer.getPhone());             // phone
+            params.add(customer.getEmail());             // email
+            params.add(customer.getAddress());           // address
+            params.add(customer.getCity());              // city
+            params.add(customer.getPostalCode());        // postal_code
+            params.add(customer.getCountry());           // country
+            params.add(customer.getCustomerType());      // customer_type
+            params.add(customer.getCustomerStatus());    // customer_status
+            params.add(customer.getCustomerID());        // customer_id (WHERE condition)
+
+
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
 
             preparedStatement.executeUpdate();
 
@@ -209,7 +231,6 @@ public class CustomerDAO {
                 customer.setCity(resultSet.getString("city"));                   // 设置 city
                 customer.setPostalCode(resultSet.getString("postal_code"));      // 设置 postal_code
                 customer.setCountry(resultSet.getString("country"));             // 设置 country
-                customer.setSalesRep(resultSet.getString("sales_rep"));          // 设置 sales_rep
                 customer.setCustomerType(resultSet.getString("customer_type"));  // 设置 customer_type
                 customer.setCustomerStatus(resultSet.getString("customer_status")); // 设置 customer_status
                 customer.setCreatedDate(resultSet.getTimestamp("created_date")); // 设置 created_date

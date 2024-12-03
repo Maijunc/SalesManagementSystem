@@ -41,6 +41,33 @@
       <label for="address">地址:</label>
       <input type="text" id="address" name="address" value="<%= customer.getAddress() %>">
     </div>
+    <div class="form-group">
+      <label for="city">城市:</label>
+      <input type="text" id="city" name="city" value="<%= customer.getCity()%>">
+    </div>
+    <div class="form-group">
+      <label for="postalCode">邮政编码:</label>
+      <input type="text" id="postalCode" name="postalCode" value="<%= customer.getPostalCode()%>">
+    </div>
+    <div class="form-group">
+      <label for="country">国家:</label>
+      <input type="text" id="country" name="country" value="<%= customer.getCountry()%>">
+    </div>
+    <div class="form-group">
+      <label for="customerType">客户类型：</label>
+      <select id="customerType" name="customerType" value="<%= customer.getCustomerType()%>">
+        <option value="1">个人</option>
+        <option value="2">企业</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="customerStatus">客户类型：</label>
+      <select id="customerStatus" name="customerStatus">
+        <option value="1">活跃</option>
+        <option value="2">暂停</option>
+        <option value="3">黑名单</option>
+      </select>
+    </div>
     <div class="form-actions">
       <button type="submit" class="btn-primary">保存</button>
       <a href="customer_management.jsp" class="btn-secondary">返回</a>

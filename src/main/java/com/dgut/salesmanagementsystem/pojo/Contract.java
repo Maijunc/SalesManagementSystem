@@ -14,7 +14,7 @@ public class Contract {
     private Date contractDate;   // 合同签订日期
     private Date startDate;      // 合同开始日期
     private Date endDate;        // 合同结束日期
-    private String contractStatus; // 合同状态
+    private ContractStatus contractStatus; // 合同状态
     private BigDecimal totalAmount; // 合同总金额
     private BigDecimal paidAmount;  // 已付款金额
     private BigDecimal remainingAmount; // 未付款金额
@@ -53,11 +53,11 @@ public class Contract {
         this.endDate = endDate;
     }
 
-    public String getContractStatus() {
+    public ContractStatus getContractStatus() {
         return contractStatus;
     }
 
-    public void setContractStatus(String contractStatus) {
+    public void setContractStatus(ContractStatus contractStatus) {
         this.contractStatus = contractStatus;
     }
 

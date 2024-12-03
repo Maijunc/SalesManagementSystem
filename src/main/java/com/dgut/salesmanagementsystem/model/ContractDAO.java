@@ -2,6 +2,7 @@ package com.dgut.salesmanagementsystem.model;
 
 import com.dgut.salesmanagementsystem.pojo.Contract;
 import com.dgut.salesmanagementsystem.pojo.ContractSearchCriteria;
+import com.dgut.salesmanagementsystem.pojo.ContractStatus;
 import com.dgut.salesmanagementsystem.pojo.Customer;
 import com.dgut.salesmanagementsystem.tool.DatabaseConnection;
 
@@ -45,16 +46,17 @@ public class ContractDAO {
             }
 
             // 如果 startDateStr 不为空，则添加相关条件
-            if (contractSearchCriteria.getStartDateStr() != null && !contractSearchCriteria.getStartDateStr().isEmpty()) {
-                sqlBuilder.append(" AND start_date >= ?");
+            if (contractSearchCriteria.getStartDateStr() != null && !contractSearchCriteria.getStartDateStr().isEmpty() && contractSearchCriteria.getEndDateStr() != null && !contractSearchCriteria.getEndDateStr().isEmpty()) {
+                sqlBuilder.append(" AND start_date BETWEEN ? AND ?");
                 params.add(contractSearchCriteria.getStartDateStr());
+                params.add(contractSearchCriteria.getEndDateStr());
             }
 
             // 如果 endDateStr 不为空，则添加相关条件
-            if (contractSearchCriteria.getEndDateStr() != null && !contractSearchCriteria.getEndDateStr().isEmpty()) {
-                sqlBuilder.append(" AND end_date <= ?");
-                params.add(contractSearchCriteria.getEndDateStr());
-            }
+//            if (contractSearchCriteria.getEndDateStr() != null && !contractSearchCriteria.getEndDateStr().isEmpty()) {
+//                sqlBuilder.append(" AND end_date <= ?");
+//
+//            }
 
             // 添加分页条件
             sqlBuilder.append(" LIMIT ? OFFSET ?");
@@ -79,7 +81,7 @@ public class ContractDAO {
                 contract.setContractDate(resultSet.getDate("contract_date"));
                 contract.setStartDate(resultSet.getDate("start_date"));
                 contract.setEndDate(resultSet.getDate("end_date"));
-                contract.setContractStatus(resultSet.getString("contract_status"));
+                contract.setContractStatus(ContractStatus.fromString(resultSet.getString("contract_status")));
                 contract.setTotalAmount(resultSet.getBigDecimal("total_amount"));
                 contract.setPaidAmount(resultSet.getBigDecimal("paid_amount"));
                 contract.setRemainingAmount(resultSet.getBigDecimal("remaining_amount"));
@@ -135,16 +137,17 @@ public class ContractDAO {
             }
 
             // 如果 startDateStr 不为空，则添加相关条件
-            if (contractSearchCriteria.getStartDateStr() != null && !contractSearchCriteria.getStartDateStr().isEmpty()) {
-                sqlBuilder.append(" AND start_date >= ?");
+            if (contractSearchCriteria.getStartDateStr() != null && !contractSearchCriteria.getStartDateStr().isEmpty() && contractSearchCriteria.getEndDateStr() != null && !contractSearchCriteria.getEndDateStr().isEmpty()) {
+                sqlBuilder.append(" AND start_date BETWEEN ? AND ?");
                 params.add(contractSearchCriteria.getStartDateStr());
+                params.add(contractSearchCriteria.getEndDateStr());
             }
 
             // 如果 endDateStr 不为空，则添加相关条件
-            if (contractSearchCriteria.getEndDateStr() != null && !contractSearchCriteria.getEndDateStr().isEmpty()) {
-                sqlBuilder.append(" AND end_date <= ?");
-                params.add(contractSearchCriteria.getEndDateStr());
-            }
+//            if (contractSearchCriteria.getEndDateStr() != null && !contractSearchCriteria.getEndDateStr().isEmpty()) {
+//                sqlBuilder.append(" AND end_date <= ?");
+//                params.add(contractSearchCriteria.getEndDateStr());
+//            }
 
             // 构建最终的 SQL 查询语句
             String sql = sqlBuilder.toString();

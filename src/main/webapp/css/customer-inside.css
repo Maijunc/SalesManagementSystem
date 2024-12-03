@@ -43,7 +43,9 @@ main {
     font-size: 1em;
 }
 
-.form-group input {
+/* Style for input fields */
+.form-group input,
+.form-group select {
     width: 100%;
     padding: 12px;
     border: 1px solid #ddd;
@@ -53,9 +55,27 @@ main {
     transition: border-color 0.3s;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
     border-color: #0078d4;
     outline: none;
+}
+
+.form-group select {
+    -webkit-appearance: none;
+    /*-moz-appearance: none;*/
+    appearance: none;
+    /*background-color: #f9f9f9;*/
+    background: url("../resources/image/arrow_down.png")no-repeat scroll right center transparent;
+    /*background-size: 0.34rem 0.2rem;*/
+    /*background-repeat: no-repeat;*/
+    /*background-position: right 10px center;*/
+    /*color: #005a9e;*/
+}
+
+/* Hover effect for selects */
+.form-group select:hover {
+    border-color: #0078d4;
 }
 
 .form-actions {
@@ -71,13 +91,13 @@ button, .btn-secondary {
     font-size: 1.1em;
     cursor: pointer;
     width: 48%;
+    transition: background-color 0.3s;
 }
 
 button {
     background-color: #0078d4;
     color: white;
     border: none;
-    transition: background-color 0.3s;
 }
 
 button:hover {
