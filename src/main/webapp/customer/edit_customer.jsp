@@ -3,12 +3,13 @@
 <%@ page import="com.dgut.salesmanagementsystem.model.CustomerDAO" %>
 <%@ page import="com.dgut.salesmanagementsystem.pojo.CustomerType" %>
 <%@ page import="com.dgut.salesmanagementsystem.pojo.CustomerStatus" %>
+<%@ page import="com.dgut.salesmanagementsystem.controller.CustomerController" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>修改客户</title>
-  <link rel="stylesheet" href="../css/customer-inside.css">
+  <link rel="stylesheet" href="../css/edit-inside.css">
 </head>
 <body>
 <header>
@@ -16,9 +17,9 @@
 </header>
 <main>
   <%
-    int customerId = Integer.parseInt(request.getParameter("customerID"));
-    CustomerDAO customerDAO = new CustomerDAO();
-    Customer customer = customerDAO.getCustomerById(customerId);
+    int customerID = Integer.parseInt(request.getParameter("customerID"));
+    CustomerController customerController = new CustomerController();
+    Customer customer = customerController.getCustomerById(customerID);
   %>
   <form method="POST" action="../CustomerController" class="form-container">
     <input type="hidden" name="action" value="edit">

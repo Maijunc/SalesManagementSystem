@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>新增客户</title>
-  <link rel="stylesheet" href="../css/customer-inside.css">
+  <link rel="stylesheet" href="../css/edit-inside.css">
 </head>
 <body>
 <header>

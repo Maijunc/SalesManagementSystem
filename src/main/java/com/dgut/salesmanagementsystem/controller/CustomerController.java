@@ -25,7 +25,7 @@ public class CustomerController extends HttpServlet {
     @Override
     public void init() throws ServletException {
         customerService = new CustomerService();
-        pageSize = 6;
+        pageSize = Integer.parseInt(getServletContext().getInitParameter("pageSize"));
     }
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -51,7 +51,6 @@ public class CustomerController extends HttpServlet {
             resp.sendRedirect("customer/customer_management.jsp");
             // 不能用getRequestDispatcher，不然地址不会改变，还是在Controller这里
 //            req.getRequestDispatcher("/customer/customer_management.jsp").forward(req, resp);
-            System.out.println("Controller Called");
         }
     }
 
@@ -106,4 +105,10 @@ public class CustomerController extends HttpServlet {
             resp.sendRedirect("CustomerController?pageNum=" + pageNum + "&searchKeyword=" + searchKeyword);
         }
     }
+
+
+    public Customer getCustomerById(int customerID) {
+        return customerService.getCustomerById(customerID);
+    }
+
 }

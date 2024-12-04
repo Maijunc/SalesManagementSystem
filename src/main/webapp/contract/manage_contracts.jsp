@@ -4,6 +4,7 @@
 <%@ page import="com.dgut.salesmanagementsystem.model.CustomerDAO" %>
 <%@ page import="com.dgut.salesmanagementsystem.pojo.ContractSearchCriteria" %>
 <%@ page import="com.dgut.salesmanagementsystem.pojo.ContractStatus" %>
+<%@ page import="com.dgut.salesmanagementsystem.controller.CustomerController" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -76,7 +77,7 @@
             Integer pageSizeObj = (Integer) session.getAttribute("pageSize");
             Integer currentPageObj = (Integer) session.getAttribute("currentPage");
             Integer totalPagesObj = (Integer) session.getAttribute("totalPages");
-            CustomerDAO customerDAO = new CustomerDAO();
+            CustomerController customerController = new CustomerController();
 
             int currentPage = (currentPageObj != null) ? currentPageObj : 1;
             int totalPages = (totalPagesObj != null) ? totalPagesObj : 1;
@@ -99,7 +100,7 @@
             <td><%= (currentPage - 1) * pageSize + cnt %></td>
             <td><%= contract.getContractName() %></td>
             <td><%= contract.getContractID() %></td>
-            <td><%= customerDAO.getCustomerById(contract.getCustomerID()).getCustomerName() %></td>
+            <td><%= customerController.getCustomerById(contract.getCustomerID()).getCustomerName() %></td>
             <td>销售人员</td>
             <td><%= contract.getStartDate() %></td>
             <td class="status-tag">

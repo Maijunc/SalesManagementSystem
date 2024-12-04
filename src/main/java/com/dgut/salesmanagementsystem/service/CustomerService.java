@@ -36,4 +36,8 @@ public class CustomerService {
         totalPages = totalPages > 0 ? totalPages : 1;
         return totalPages;
     }
+
+    public Customer getCustomerById(int customerID) {
+        return customerDAO.getCustomerById(customerID);
+    }
 }

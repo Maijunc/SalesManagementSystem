@@ -2,6 +2,7 @@ package com.dgut.salesmanagementsystem.model;
 
 import com.dgut.salesmanagementsystem.pojo.Customer;
 import com.dgut.salesmanagementsystem.pojo.Role;
+import com.dgut.salesmanagementsystem.pojo.Salesman;
 import com.dgut.salesmanagementsystem.pojo.User;
 import com.dgut.salesmanagementsystem.tool.DatabaseConnection;
 
@@ -30,12 +31,7 @@ public class CustomerDAO {
             e.printStackTrace();
         } finally {
             // 关闭资源
-            try {
-                if (preparedStatement != null) preparedStatement.close();
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            closeResources(connection, preparedStatement, null);
         }
     }
 
@@ -69,32 +65,13 @@ public class CustomerDAO {
 
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                Customer customer = new Customer();
-                customer.setCustomerID(resultSet.getInt("customer_id"));         // 设置 customer_id
-                customer.setCustomerName(resultSet.getString("customer_name"));   // 设置 customer_name
-                customer.setContactPerson(resultSet.getString("contact_person")); // 设置 contact_person
-                customer.setPhone(resultSet.getString("phone"));                 // 设置 phone
-                customer.setEmail(resultSet.getString("email"));                 // 设置 email
-                customer.setAddress(resultSet.getString("address"));             // 设置 address
-                customer.setCity(resultSet.getString("city"));                   // 设置 city
-                customer.setPostalCode(resultSet.getString("postal_code"));      // 设置 postal_code
-                customer.setCountry(resultSet.getString("country"));             // 设置 country
-                customer.setCustomerType(resultSet.getString("customer_type"));  // 设置 customer_type
-                customer.setCustomerStatus(resultSet.getString("customer_status")); // 设置 customer_status
-                customer.setCreatedDate(resultSet.getTimestamp("created_date")); // 设置 created_date
-                customer.setLastModifiedDate(resultSet.getTimestamp("last_modified_date")); // 设置 last_modified_date
+                Customer customer = mapResultSetToCustomer(resultSet);
                 ret.add(customer);
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (resultSet != null) resultSet.close();
-                if (preparedStatement != null) preparedStatement.close();
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            closeResources(connection, preparedStatement, resultSet);
         }
         return ret;
     }
@@ -137,13 +114,7 @@ public class CustomerDAO {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            // 关闭资源
-            try {
-                if (preparedStatement != null) preparedStatement.close();
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            closeResources(connection, preparedStatement, null);
         }
     }
 
@@ -197,12 +168,7 @@ public class CustomerDAO {
             e.printStackTrace();
         } finally {
             // 关闭资源
-            try {
-                if (preparedStatement != null) preparedStatement.close();
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            closeResources(connection, preparedStatement, null);
         }
     }
 
@@ -221,32 +187,13 @@ public class CustomerDAO {
 
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                customer = new Customer();
-                customer.setCustomerID(customerID);         // 设置 customer_id
-                customer.setCustomerName(resultSet.getString("customer_name"));   // 设置 customer_name
-                customer.setContactPerson(resultSet.getString("contact_person")); // 设置 contact_person
-                customer.setPhone(resultSet.getString("phone"));                 // 设置 phone
-                customer.setEmail(resultSet.getString("email"));                 // 设置 email
-                customer.setAddress(resultSet.getString("address"));             // 设置 address
-                customer.setCity(resultSet.getString("city"));                   // 设置 city
-                customer.setPostalCode(resultSet.getString("postal_code"));      // 设置 postal_code
-                customer.setCountry(resultSet.getString("country"));             // 设置 country
-                customer.setCustomerType(resultSet.getString("customer_type"));  // 设置 customer_type
-                customer.setCustomerStatus(resultSet.getString("customer_status")); // 设置 customer_status
-                customer.setCreatedDate(resultSet.getTimestamp("created_date")); // 设置 created_date
-                customer.setLastModifiedDate(resultSet.getTimestamp("last_modified_date")); // 设置 last_modified_date
+                customer = mapResultSetToCustomer(resultSet);
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             // 关闭资源
-            try {
-                if (resultSet != null) resultSet.close();
-                if (preparedStatement != null) preparedStatement.close();
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            closeResources(connection, preparedStatement, resultSet);
         }
 
         return customer;
@@ -259,9 +206,11 @@ public class CustomerDAO {
         int totalRecords = 0;
         try {
             connection = DatabaseConnection.getConnection();
-            String sql = "SELECT COUNT(*) FROM Customer WHERE customer_name LIKE ?";
+            String sql = "SELECT COUNT(*) FROM Customer WHERE customer_name LIKE ?" +
+                    " OR contact_person LIKE ?";
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, "%" + searchKeyword + "%");
+            preparedStatement.setString(2, "%" + searchKeyword + "%");
 
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -270,15 +219,36 @@ public class CustomerDAO {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (resultSet != null) resultSet.close();
-                if (preparedStatement != null) preparedStatement.close();
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            closeResources(connection, preparedStatement, resultSet);
         }
         return totalRecords;
     }
 
+    private Customer mapResultSetToCustomer(ResultSet resultSet) throws Exception {
+        Customer customer = new Customer();
+        customer.setCustomerID(resultSet.getInt("customer_id")); // 设置 customer_id
+        customer.setCustomerName(resultSet.getString("customer_name"));   // 设置 customer_name
+        customer.setContactPerson(resultSet.getString("contact_person")); // 设置 contact_person
+        customer.setPhone(resultSet.getString("phone"));                 // 设置 phone
+        customer.setEmail(resultSet.getString("email"));                 // 设置 email
+        customer.setAddress(resultSet.getString("address"));             // 设置 address
+        customer.setCity(resultSet.getString("city"));                   // 设置 city
+        customer.setPostalCode(resultSet.getString("postal_code"));      // 设置 postal_code
+        customer.setCountry(resultSet.getString("country"));             // 设置 country
+        customer.setCustomerType(resultSet.getString("customer_type"));  // 设置 customer_type
+        customer.setCustomerStatus(resultSet.getString("customer_status")); // 设置 customer_status
+        customer.setCreatedDate(resultSet.getTimestamp("created_date")); // 设置 created_date
+        customer.setLastModifiedDate(resultSet.getTimestamp("last_modified_date")); // 设置 last_modified_date
+        return customer;
+    }
+
+    private void closeResources(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet) {
+        try {
+            if (resultSet != null) resultSet.close();
+            if (preparedStatement != null) preparedStatement.close();
+            if (connection != null) connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

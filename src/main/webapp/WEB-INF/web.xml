@@ -10,5 +10,10 @@
         <listener-class>com.dgut.salesmanagementsystem.tool.MyContextListener</listener-class>
     </listener>
 
+    <context-param>
+        <param-name>pageSize</param-name>
+        <param-value>6</param-value> <!-- 设置默认的pageSize -->
+    </context-param>
+
 </web-app>
 

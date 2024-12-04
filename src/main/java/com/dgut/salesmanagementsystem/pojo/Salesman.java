@@ -15,25 +15,23 @@ public class Salesman {
     performance_stats（销售业绩统计）：销售人员的销售业绩数据（比如，按月、季度、年度统计的销售额）。
     commission（佣金）：销售人员的佣金，通常根据销售额来计算。
      */
-    private int salespersonId;            // 唯一标识销售人员的ID
+    private int salesmanID;            // 唯一标识销售人员的ID
     private String name;                  // 销售人员的姓名
-    private Map<String, Object> contactInfo;  // 销售人员的联系方式，存储为Map，适应JSON格式
+    private ContactInfo contactInfo;  // 销售人员的联系方式，存储为Map，适应JSON格式
     private List<Contract> contracts;
     private BigDecimal totalSales;        // 总销售额
-    private Map<String, Object> performanceStats; // 销售业绩统计，存储为Map，适应JSON格式
+    private PerformanceStats performanceStats; // 销售业绩统计，存储为Map，适应JSON格式
     private BigDecimal commission;        // 销售人员佣金
 
-    public int getSalespersonId() {
-        return salespersonId;
-    }
+    private String ContactInfoJson; //Json形式的联系方式
+
+    private String PerformanceStatsJson; //Json形式的联系方式
 
     public String getName() {
         return name;
     }
 
-    public Map<String, Object> getContactInfo() {
-        return contactInfo;
-    }
+
 
     public List<Contract> getContracts() {
         return contracts;
@@ -43,24 +41,11 @@ public class Salesman {
         return totalSales;
     }
 
-    public Map<String, Object> getPerformanceStats() {
-        return performanceStats;
-    }
-
     public BigDecimal getCommission() {
         return commission;
     }
-
-    public void setSalespersonId(int salespersonId) {
-        this.salespersonId = salespersonId;
-    }
-
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setContactInfo(Map<String, Object> contactInfo) {
-        this.contactInfo = contactInfo;
     }
 
     public void setContracts(List<Contract> contracts) {
@@ -71,11 +56,65 @@ public class Salesman {
         this.totalSales = totalSales;
     }
 
-    public void setPerformanceStats(Map<String, Object> performanceStats) {
-        this.performanceStats = performanceStats;
-    }
-
     public void setCommission(BigDecimal commission) {
         this.commission = commission;
     }
+
+    public ContactInfo getContactInfo() {
+        return contactInfo;
+    }
+
+    public void setContactInfo(ContactInfo contactInfo) {
+        this.contactInfo = contactInfo;
+    }
+
+    public PerformanceStats getPerformanceStats() {
+        return performanceStats;
+    }
+
+    public void setPerformanceStats(PerformanceStats performanceStats) {
+        this.performanceStats = performanceStats;
+    }
+
+    public int getSalesmanID() {
+        return salesmanID;
+    }
+
+    public void setSalesmanID(int salesmanID) {
+        this.salesmanID = salesmanID;
+    }
+
+    public String getContactInfoJson() {
+        return ContactInfoJson;
+    }
+
+    public void setContactInfoJson(String contactInfoJson) {
+        ContactInfoJson = contactInfoJson;
+    }
+
+    public String getPerformanceStatsJson() {
+        return PerformanceStatsJson;
+    }
+
+    public void setPerformanceStatsJson(String performanceStatsJson) {
+        PerformanceStatsJson = performanceStatsJson;
+    }
+
+    public Salesman() {
+    }
+
+    public Salesman(int salesmanID, String name, ContactInfo contactInfo, List<Contract> contracts, BigDecimal totalSales, PerformanceStats performanceStats, BigDecimal commission, String contactInfoJson, String performanceStatsJson) {
+        this.salesmanID = salesmanID;
+        this.name = name;
+        this.contactInfo = contactInfo;
+        this.contracts = contracts;
+        this.totalSales = totalSales;
+        this.performanceStats = performanceStats;
+        this.commission = commission;
+        ContactInfoJson = contactInfoJson;
+        PerformanceStatsJson = performanceStatsJson;
+    }
+
+
+
 }

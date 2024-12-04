@@ -24,7 +24,7 @@ public class ContractController extends HttpServlet{
     @Override
     public void init() throws ServletException {
         contractService = new ContractService();
-        pageSize = 6;
+        pageSize = Integer.parseInt(getServletContext().getInitParameter("pageSize"));
     }
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
