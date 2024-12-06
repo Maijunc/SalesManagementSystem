@@ -1,11 +1,10 @@
 package com.dgut.salesmanagementsystem.controller;
 
 import com.dgut.salesmanagementsystem.model.CustomerDAO;
-import com.dgut.salesmanagementsystem.pojo.Customer;
-import com.dgut.salesmanagementsystem.pojo.CustomerStatus;
-import com.dgut.salesmanagementsystem.pojo.CustomerType;
+import com.dgut.salesmanagementsystem.pojo.*;
 import com.dgut.salesmanagementsystem.service.CustomerService;
 import com.dgut.salesmanagementsystem.service.SalesmanService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -34,9 +33,12 @@ public class CustomerController extends HttpServlet {
         String action = req.getParameter("action");
         if ("delete".equals(action)) {
             deleteCustomer(req, resp);
+        } else if("ajax".equals(action)){
+            searchCustomerForAjax(req, resp);
         } else {
             searchCustomer(req, resp);
         }
+
     }
 
     @Override
@@ -47,6 +49,8 @@ public class CustomerController extends HttpServlet {
         } else if ("edit".equals(action)) {
             editCustomer(req, resp);
         }
+
+
     }
 
 
@@ -135,5 +139,29 @@ public class CustomerController extends HttpServlet {
 
     public List<Customer> getPageCustomers(String searchKeyword, int pageNum){
         return customerService.searchCustomers(searchKeyword, pageNum, pageSize);
+    }
+
+    public void searchCustomerForAjax(HttpServletRequest request, HttpServletResponse response) throws IOException
+    {
+        String searchKeyword = request.getParameter("searchKeyword");
+        String pageParam = request.getParameter("pageNum");
+        int curPage = (pageParam != null) ? Integer.parseInt(pageParam) : 1;
+        if(searchKeyword == null)
+            searchKeyword = "";
+        int pageNum = request.getParameter("pageNum") == null ? 1 : Integer.parseInt(request.getParameter("pageNum"));
+
+        List<Customer> customerList = customerService.searchCustomers(searchKeyword, pageNum, pageSize);
+        PaginatedResult<Customer> result = customerService.getSalesmenByPage(searchKeyword, curPage, pageSize, customerList);
+//        response.setContentType("application/json;charset=UTF-8");
+//
+//        try (PrintWriter out = response.getWriter()) {
+//            out.write(new Gson().toJson(result)); // 使用 Gson 库将对象转为 JSON
+//        }
+        // 将结果转换为JSON返回给前端
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonResult = mapper.writeValueAsString(result);
+        response.getWriter().write(jsonResult);
+
+        System.out.println(jsonResult);
     }
 }

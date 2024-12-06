@@ -149,7 +149,7 @@ table tr:hover {
     }
 }
 
-/* 分页控件样式 */
+ /*分页控件样式*/
 /*.pagination {*/
 /*    text-align: center;*/
 /*    margin: 20px 0;*/
@@ -177,3 +177,66 @@ table tr:hover {
 /*    color: white;*/
 /*    pointer-events: none;*/
 /*}*/
+
+/*----------------*/
+/*style*/
+/* 分页控件样式 */
+.pagination {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.pagination a {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 0 5px;
+    text-decoration: none;
+    background-color: #f4f4f9;
+    border: 1px solid #ddd;
+    color: #0078d4;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #0078d4;
+    color: white;
+}
+
+.pagination a.active {
+    background-color: #005a9e;
+    color: white;
+    pointer-events: none;
+}
+
+.pagination a.disabled {
+    background-color: #ddd;
+    color: #bbb;
+    pointer-events: none;
+}
+
+.pagination span {
+    margin-left: 10px;
+}
+
+.pagination input {
+    width: 50px;
+    padding: 4px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.pagination button {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    background-color: #0078d4;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.pagination button:hover {
+    background-color: #005a9e;
+}

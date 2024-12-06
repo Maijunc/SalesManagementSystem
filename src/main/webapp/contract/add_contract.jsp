@@ -12,68 +12,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>新建合同</title>
     <link rel="stylesheet" href="../css/add-contract.css"> <!-- 使用你的样式 -->
-    <style>
-        /* 分页控件样式 */
-        .pagination {
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .pagination a {
-            display: inline-block;
-            padding: 8px 12px;
-            margin: 0 5px;
-            text-decoration: none;
-            background-color: #f4f4f9;
-            border: 1px solid #ddd;
-            color: #0078d4;
-            border-radius: 4px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .pagination a:hover {
-            background-color: #0078d4;
-            color: white;
-        }
-
-        .pagination a.active {
-            background-color: #005a9e;
-            color: white;
-            pointer-events: none;
-        }
-
-        .pagination a.disabled {
-            background-color: #ddd;
-            color: #bbb;
-            pointer-events: none;
-        }
-
-        .pagination span {
-            margin-left: 10px;
-        }
-
-        .pagination input {
-            width: 50px;
-            padding: 4px;
-            text-align: center;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .pagination button {
-            padding: 6px 12px;
-            border: 1px solid #ddd;
-            background-color: #0078d4;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .pagination button:hover {
-            background-color: #005a9e;
-        }
-    </style>
 </head>
 <body>
 <h2>新建合同</h2>
@@ -103,23 +41,13 @@
     </div>
 
     <!-- 客户选择 -->
-    <div>
-        <label for="customerID">客户：</label>
-        <select id="customerID" name="customerID" required>
-            <option value="">请选择客户</option>
-            <%
-                CustomerController customerController = new CustomerController();
-                List<Customer> customerList = customerController.getPageCustomers("", 1);
-                if (customerList != null) {
-                    for (Customer customer : customerList) {
-            %>
-            <option value="<%= customer.getCustomerID() %>"><%= customer.getCustomerName() %></option>
-            <%
-                    }
-                }
-            %>
-        </select>
+    <div class="form-group">
+        <label for="salesmanInfo">客户:</label>
+        <input type="text" id="customerInfo" name="customerInfo" readonly onclick="editCustomerInfo()"
+               placeholder="点击选择客户">
     </div>
+    <!-- 隐藏字段，用于提交客户ID -->
+    <input type="hidden" id="customerID" name="customerID">
 
     <!-- 销售人员选择 -->
     <div class="form-group">
@@ -162,7 +90,7 @@
         <span class="close" onclick="closeSalesmanModal()">&times;</span>
         <h2>选择销售人员</h2>
         <form method="GET" id="searchSalesmanForm">
-            <input type="text" id="searchKeyword" placeholder="请输入销售人员姓名或ID">
+            <input type="text" id="SalesmanSearchKeyword" placeholder="请输入销售人员姓名或ID">
             <button type="button" onclick="searchSalesman()">查询</button>
         </form>
         <table id="salesmanTable">
@@ -173,7 +101,24 @@
     </div>
 </div>
 
+<div id="customerModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeCustomerModal()">&times;</span>
+        <h2>选择销售人员</h2>
+        <form method="GET" id="searchCustomerForm">
+            <input type="text" id="customerSearchKeyword" placeholder="请输入销售人员姓名或ID">
+            <button type="button" onclick="searchCustomer()">查询</button>
+        </form>
+        <table id="customerTable">
+            <!-- 动态填充 -->
+        </table>
+        <!-- 分页控件 -->
+        <div class="pagination" id="customerPagination"></div>
+    </div>
+</div>
+
 <script>
+
     function editSalesmanInfo() {
         document.getElementById('salesmanModal').style.display = 'block';
     }
@@ -189,7 +134,7 @@
     }
 
     function searchSalesman(page = 1) {
-        const keyword = document.getElementById('searchKeyword').value;
+        const keyword = document.getElementById('SalesmanSearchKeyword').value;
         fetch(`../SalesmanController?searchKeyword=\${encodeURIComponent(keyword)}&action=ajax&pageNum=\${page}`)
             .then(response => response.json())
             .then(data => {
@@ -210,12 +155,12 @@
                 } else {
                     table.innerHTML = '<tr><td colspan="3">暂无销售人员信息</td></tr>';
                 }
-                updatePagination(data);
+                updateSalesmanPagination(data);
             })
             .catch(error => console.error('查询失败:', error));
     }
 
-    function updatePagination(data) {
+    function updateSalesmanPagination(data) {
         const pagination = document.getElementById('salesmanPagination');
         pagination.innerHTML = '';
 
@@ -258,6 +203,94 @@
         jumpTo.innerHTML = `
             跳转到: <input type="number" min="1" max="\${totalPages}" value="\${currentPage}" id="jumpToPage">
             <button onclick="searchSalesman(document.getElementById('jumpToPage').value)">跳转</button>
+        `;
+        pagination.appendChild(jumpTo);
+    }
+
+    function editCustomerInfo() {
+        document.getElementById('customerModal').style.display = 'block';
+    }
+
+    function closeCustomerModal() {
+        document.getElementById('customerModal').style.display = 'none';
+    }
+
+    function selectCustomer(id, name) {
+        document.getElementById('customerID').value = id;
+        document.getElementById('customerInfo').value = name;
+        closeCustomerModal();
+    }
+
+    function searchCustomer(page = 1) {
+        const keyword = document.getElementById('customerSearchKeyword').value;
+        fetch(`../CustomerController?searchKeyword=\${encodeURIComponent(keyword)}&action=ajax&pageNum=\${page}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                const table = document.getElementById('customerTable');
+                table.innerHTML = '';
+                if (data.elementList && data.elementList.length > 0) {
+                    data.elementList.forEach(customer => {
+                        console.log(customer)
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>\${customer.customerID}</td>
+                            <td>\${customer.customerName}</td>
+                            <td><button onclick="selectCustomer('\${customer.salesmanID}', '\${customer.customerName}')">选择</button></td>
+                        `;
+                        table.appendChild(row);
+                    });
+                } else {
+                    table.innerHTML = '<tr><td colspan="3">暂无客户信息</td></tr>';
+                }
+                updateCustomerPagination(data);
+            })
+            .catch(error => console.error('查询失败:', error));
+    }
+
+    function updateCustomerPagination(data) {
+        const pagination = document.getElementById('customerPagination');
+        pagination.innerHTML = '';
+
+        const totalPages = data.totalPages || 1;
+        const currentPage = data.currentPage || 1;
+
+        const prevButton = document.createElement('a');
+        prevButton.href = '#';
+        prevButton.textContent = '上一页';
+        prevButton.className = currentPage === 1 ? 'disabled' : '';
+        prevButton.onclick = (e) => {
+            e.preventDefault();
+            if (currentPage > 1) searchCustomer(currentPage - 1);
+        };
+        pagination.appendChild(prevButton);
+
+        for (let i = 1; i <= totalPages; i++) {
+            const pageLink = document.createElement('a');
+            pageLink.href = '#';
+            pageLink.textContent = i;
+            pageLink.className = i === currentPage ? 'active' : '';
+            pageLink.onclick = (e) => {
+                e.preventDefault();
+                searchCustomer(i);
+            };
+            pagination.appendChild(pageLink);
+        }
+
+        const nextButton = document.createElement('a');
+        nextButton.href = '#';
+        nextButton.textContent = '下一页';
+        nextButton.className = currentPage === totalPages ? 'disabled' : '';
+        nextButton.onclick = (e) => {
+            e.preventDefault();
+            if (currentPage < totalPages) searchCustomer(currentPage + 1);
+        };
+        pagination.appendChild(nextButton);
+
+        const jumpTo = document.createElement('span');
+        jumpTo.innerHTML = `
+            跳转到: <input type="number" min="1" max="\${totalPages}" value="\${currentPage}" id="jumpToPage">
+            <button onclick="searchCustomer(document.getElementById('jumpToPage').value)">跳转</button>
         `;
         pagination.appendChild(jumpTo);
     }

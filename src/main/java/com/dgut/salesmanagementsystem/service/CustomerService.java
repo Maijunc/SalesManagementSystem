@@ -2,6 +2,8 @@ package com.dgut.salesmanagementsystem.service;
 
 import com.dgut.salesmanagementsystem.model.CustomerDAO;
 import com.dgut.salesmanagementsystem.pojo.Customer;
+import com.dgut.salesmanagementsystem.pojo.PaginatedResult;
+import com.dgut.salesmanagementsystem.pojo.Salesman;
 
 import java.util.List;
 
@@ -39,5 +41,19 @@ public class CustomerService {
 
     public Customer getCustomerById(int customerID) {
         return customerDAO.getCustomerById(customerID);
+    }
+
+    public PaginatedResult<Customer> getSalesmenByPage(String searchKeyword, int curPage, int pageSize, List<Customer> customerList) {
+        int totalRecords = customerDAO.countCustomers(searchKeyword);
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+        totalPages = totalPages > 0 ? totalPages : 1;
+        // 设置分页相关属性
+        PaginatedResult<Customer> result = new PaginatedResult<>();
+        result.setElementList(customerList);
+        result.setCurrentPage(curPage);
+        result.setTotalPages(totalPages);
+        result.setTotalRecords(totalRecords);
+
+        return result;
     }
 }
