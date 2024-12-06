@@ -2,6 +2,7 @@ package com.dgut.salesmanagementsystem.pojo;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 public class Contract {
 
@@ -20,6 +21,7 @@ public class Contract {
     private BigDecimal remainingAmount; // 未付款金额
     private Integer customerID;    // 客户ID
     private Integer salesmanID;    // 销售人员ID
+    private List<ContractItem> contractItemList; //合同中涉及的商品列表
 
     public Integer getContractID() {
         return contractID;
@@ -107,5 +109,13 @@ public class Contract {
 
     public void setContractName(String contractName) {
         this.contractName = contractName;
+    }
+
+    public List<ContractItem> getContractItemList() {
+        return contractItemList;
+    }
+
+    public void setContractItemList(List<ContractItem> contractItemList) {
+        this.contractItemList = contractItemList;
     }
 }

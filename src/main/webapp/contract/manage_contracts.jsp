@@ -5,6 +5,7 @@
 <%@ page import="com.dgut.salesmanagementsystem.pojo.ContractSearchCriteria" %>
 <%@ page import="com.dgut.salesmanagementsystem.pojo.ContractStatus" %>
 <%@ page import="com.dgut.salesmanagementsystem.controller.CustomerController" %>
+<%@ page import="com.dgut.salesmanagementsystem.controller.SalesmanController" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -78,6 +79,7 @@
             Integer currentPageObj = (Integer) session.getAttribute("currentPage");
             Integer totalPagesObj = (Integer) session.getAttribute("totalPages");
             CustomerController customerController = new CustomerController();
+            SalesmanController salesmanController = new SalesmanController();
 
             int currentPage = (currentPageObj != null) ? currentPageObj : 1;
             int totalPages = (totalPagesObj != null) ? totalPagesObj : 1;
@@ -101,7 +103,7 @@
             <td><%= contract.getContractName() %></td>
             <td><%= contract.getContractID() %></td>
             <td><%= customerController.getCustomerById(contract.getCustomerID()).getCustomerName() %></td>
-            <td>销售人员</td>
+            <td><%= salesmanController.getSalesmanById(contract.getSalesmanID()).getName()%></td>
             <td><%= contract.getStartDate() %></td>
             <td class="status-tag">
             <% if("未开始".equals(contractStatus))

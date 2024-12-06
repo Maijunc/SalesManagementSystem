@@ -5,6 +5,8 @@ import com.dgut.salesmanagementsystem.pojo.ContractSearchCriteria;
 import com.dgut.salesmanagementsystem.pojo.ContractStatus;
 import com.dgut.salesmanagementsystem.pojo.Customer;
 import com.dgut.salesmanagementsystem.service.ContractService;
+import com.dgut.salesmanagementsystem.service.CustomerService;
+import com.dgut.salesmanagementsystem.service.SalesmanService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,19 +17,33 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/ContractController")
+@WebServlet(value = "/ContractController", loadOnStartup = 1)
 public class ContractController extends HttpServlet{
-    private ContractService contractService;
-
+    private final ContractService contractService = new ContractService();
     private int pageSize;
 
     @Override
     public void init() throws ServletException {
-        contractService = new ContractService();
-        pageSize = Integer.parseInt(getServletContext().getInitParameter("pageSize"));
+        super.init();
+        // 在这里获取Servlet上下文参数
+        this.pageSize = Integer.parseInt(getServletContext().getInitParameter("pageSize"));
     }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String action = req.getParameter("action");
+        if("add".equals(action))
+            addContract(req, resp);
+        else
+            searchContract(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getRequestDispatcher("../contract/manage_contracts.jsp").forward(req, resp);
+    }
+
+    private void searchContract(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String contractName = req.getParameter("contractName");
         String contractIDStr = req.getParameter("contractID");
         String status = req.getParameter("status");
@@ -74,11 +90,9 @@ public class ContractController extends HttpServlet{
 
 
         resp.sendRedirect("contract/manage_contracts.jsp");
-//        req.getRequestDispatcher("contract/manage_contracts.jsp").forward(req, resp);
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("../contract/manage_contracts.jsp").forward(req, resp);
+    private void addContract(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
     }
 }

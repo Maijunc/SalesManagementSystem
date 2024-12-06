@@ -1,8 +1,12 @@
 package com.dgut.salesmanagementsystem.controller;
 
 import com.dgut.salesmanagementsystem.pojo.Customer;
+import com.dgut.salesmanagementsystem.pojo.PaginatedResult;
 import com.dgut.salesmanagementsystem.pojo.Salesman;
+import com.dgut.salesmanagementsystem.service.CustomerService;
 import com.dgut.salesmanagementsystem.service.SalesmanService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,17 +16,20 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.List;
 
-@WebServlet("/SalesmanController")
+@WebServlet(value = "/SalesmanController", loadOnStartup = 1)
 public class SalesmanController extends HttpServlet {
-    private SalesmanService salesService = new SalesmanService();
-
+    private final SalesmanService salesService = new SalesmanService();
     private int pageSize;
+
     @Override
     public void init() throws ServletException {
-        pageSize = Integer.parseInt(getServletContext().getInitParameter("pageSize"));
+        super.init();
+        // 在这里获取Servlet上下文参数
+        this.pageSize = Integer.parseInt(getServletContext().getInitParameter("pageSize"));
     }
 
     @Override
@@ -42,9 +49,35 @@ public class SalesmanController extends HttpServlet {
 
         if ("delete".equals(action)) {
             deleteSalesman(request, response);
+        } else if("ajax".equals(action)){
+            searchSalesmanForAjax(request, response);
         } else {
             searchSalesman(request, response);
         }
+    }
+
+    public void searchSalesmanForAjax(HttpServletRequest request, HttpServletResponse response) throws IOException
+    {
+        String searchKeyword = request.getParameter("searchKeyword");
+        String pageParam = request.getParameter("pageNum");
+        int curPage = (pageParam != null) ? Integer.parseInt(pageParam) : 1;
+        if(searchKeyword == null)
+            searchKeyword = "";
+        int pageNum = request.getParameter("pageNum") == null ? 1 : Integer.parseInt(request.getParameter("pageNum"));
+
+        List<Salesman> salesmanList = salesService.searchSalesmen(searchKeyword, pageNum, pageSize);
+        PaginatedResult<Salesman> result = salesService.getSalesmenByPage(searchKeyword, curPage, pageSize, salesmanList);
+//        response.setContentType("application/json;charset=UTF-8");
+//
+//        try (PrintWriter out = response.getWriter()) {
+//            out.write(new Gson().toJson(result)); // 使用 Gson 库将对象转为 JSON
+//        }
+        // 将结果转换为JSON返回给前端
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonResult = mapper.writeValueAsString(result);
+        response.getWriter().write(jsonResult);
+
+        System.out.println(jsonResult);
     }
 
     public void searchSalesman(HttpServletRequest request, HttpServletResponse response) throws IOException
@@ -64,7 +97,7 @@ public class SalesmanController extends HttpServlet {
         session.setAttribute("totalPages", totalPages);
         session.setAttribute("searchKeyword", searchKeyword);
 
-        response.sendRedirect("salesman/salesman_management.jsp");
+        response.sendRedirect("Salesman_management.jsp");
     }
 
     private void addSalesman(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -102,7 +135,11 @@ public class SalesmanController extends HttpServlet {
         return salesService.getSalesmanById(salesmanID);
     }
 
-    public List<Salesman> getAllSalesmen() {
+    private List<Salesman> getAllSalesmen() {
         return salesService.getAllSalesmen();
+    }
+
+    public List<Salesman> getPageSalesmen(String searchKeyword, int pageNum){
+        return salesService.searchSalesmen(searchKeyword, pageNum, pageSize);
     }
 }

@@ -2,6 +2,7 @@ package com.dgut.salesmanagementsystem.service;
 
 import com.dgut.salesmanagementsystem.model.SalesmanDAO;
 import com.dgut.salesmanagementsystem.pojo.ContactInfo;
+import com.dgut.salesmanagementsystem.pojo.PaginatedResult;
 import com.dgut.salesmanagementsystem.pojo.Salesman;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -117,4 +118,17 @@ public class SalesmanService {
     }
 
 
+    public PaginatedResult<Salesman> getSalesmenByPage(String searchKeyword, int curPage, int pageSize, List<Salesman> salesmanList) {
+        int totalRecords = salesmanDAO.countSalesmen(searchKeyword);
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+        totalPages = totalPages > 0 ? totalPages : 1;
+        // 设置分页相关属性
+        PaginatedResult<Salesman> result = new PaginatedResult<>();
+        result.setElementList(salesmanList);
+        result.setCurrentPage(curPage);
+        result.setTotalPages(totalPages);
+        result.setTotalRecords(totalRecords);
+
+        return result;
+    }
 }
