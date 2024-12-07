@@ -1,9 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.List" %>
-<%@ page import="com.dgut.salesmanagementsystem.pojo.Salesman" %>
-<%@ page import="com.dgut.salesmanagementsystem.pojo.Customer" %>
-<%@ page import="com.dgut.salesmanagementsystem.controller.SalesmanController" %>
-<%@ page import="com.dgut.salesmanagementsystem.controller.CustomerController" %>
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -58,33 +53,55 @@
     <!-- 隐藏字段，用于提交销售人员ID -->
     <input type="hidden" id="salesmanID" name="salesmanID">
 
-    <!-- 商品选择 -->
     <h3>商品列表</h3>
-    <table>
+    <table id="productTable">
         <thead>
         <tr>
-            <th>选择商品</th>
+            <th>商品ID</th>
+            <th>商品名称</th>
             <th>数量</th>
             <th>单价</th>
-            <th>总价</th>
+            <th>操作</th>
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td><input type="checkbox" name="product" value="1"> 商品1</td>
-            <td><input type="number" name="quantity" value="1"></td>
-            <td><input type="text" name="unitPrice" value="100.00" readonly></td>
-            <td><input type="text" name="totalPrice" value="100.00" readonly></td>
-        </tr>
-        <!-- 其他商品行 -->
+        <!-- 动态填充 -->
         </tbody>
     </table>
+    <button type="button" onclick="openProductModal()">选择商品</button>
 
     <div>
         <button type="submit">保存合同</button>
     </div>
 </form>
 
+<!-- 商品选择模态框 -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeProductModal()">&times;</span>
+        <h2>选择商品</h2>
+        <form method="GET" id="searchProductForm">
+            <input type="text" id="productSearchKeyword" placeholder="请输入商品名称或ID">
+            <button type="button" onclick="searchProduct()">查询</button>
+        </form>
+        <table id="productTableModal">
+            <thead>
+            <tr>
+                <th>商品ID</th>
+                <th>商品名称</th>
+                <th>库存</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- 动态填充 -->
+            </tbody>
+        </table>
+        <div class="pagination" id="productPagination"></div>
+    </div>
+</div>
+
+<%--销售人员选择模态框--%>
 <div id="salesmanModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeSalesmanModal()">&times;</span>
@@ -101,6 +118,7 @@
     </div>
 </div>
 
+<%--客户选择模态框--%>
 <div id="customerModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeCustomerModal()">&times;</span>
@@ -377,6 +395,93 @@
         `;
         pagination.appendChild(jumpTo);
     }
+
+    // 打开商品选择模态框
+    function openProductModal() {
+        document.getElementById('productModal').style.display = 'block';
+    }
+
+    // 关闭商品选择模态框
+    function closeProductModal() {
+        document.getElementById('productModal').style.display = 'none';
+    }
+
+    // 查询商品
+    function searchProduct(page = 1) {
+        const keyword = document.getElementById('productSearchKeyword').value;
+        fetch(`../ProductController?searchKeyword=\${encodeURIComponent(keyword)}&action=ajax&pageNum=\${page}`)
+            .then(response => response.json())
+            .then(data => {
+                const table = document.getElementById('productTableModal').querySelector('tbody');
+                table.innerHTML = '';
+                if (data.elementList.length > 0) {
+                    data.elementList.forEach(product => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                        <td>\${product.productID}</td>
+                        <td>\${product.productName}</td>
+                        <td>\${product.stockQuantity}</td>
+                        <td>
+                            <button onclick="selectProduct('\${product.productID}', '\${product.productName}')">选择</button>
+                        </td>
+                    `;
+                        table.appendChild(row);
+                    });
+                } else {
+                    table.innerHTML = '<tr><td colspan="4">暂无商品信息</td></tr>';
+                }
+
+                // 分页控件
+                const pagination = document.getElementById('productPagination');
+                pagination.innerHTML = '';
+                for (let i = 1; i <= data.totalPages; i++) {
+                    const pageLink = document.createElement('a');
+                    pageLink.href = '#';
+                    pageLink.textContent = i;
+                    pageLink.className = i === data.currentPage ? 'active' : '';
+                    pageLink.onclick = (e) => {
+                        e.preventDefault();
+                        searchProduct(i);
+                    };
+                    pagination.appendChild(pageLink);
+                }
+            })
+            .catch(error => console.error('查询失败:', error));
+    }
+
+    // 选择商品
+    function selectProduct(productID, productName) {
+        const quantity = prompt(`请输入 \${productName} 的数量:`, 1);
+        const unitPrice = prompt(`请输入 \${productName} 的单价:`, 0);
+
+        if (quantity && unitPrice) {
+            const table = document.getElementById('productTable').querySelector('tbody');
+            const existingRow = Array.from(table.rows).find(row => row.cells[0].textContent === productID);
+
+            if (existingRow) {
+                alert('商品已存在，请直接修改数量或单价！');
+            } else {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>\${productID}</td>
+                <td>\${productName}</td>
+                <td contenteditable="true">\${quantity}</td>
+                <td contenteditable="true">\${unitPrice}</td>
+                <td><button onclick="removeProduct(this)">删除</button></td>
+            `;
+                table.appendChild(row);
+            }
+        }
+
+        closeProductModal();
+    }
+
+    // 删除商品
+    function removeProduct(button) {
+        const row = button.parentElement.parentElement;
+        row.parentElement.removeChild(row);
+    }
+
 
     /* 页面加载的时候就加载一次 */
     window.onload=function(){

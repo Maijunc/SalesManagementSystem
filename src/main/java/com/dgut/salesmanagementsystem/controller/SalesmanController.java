@@ -20,7 +20,7 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.List;
 
-@WebServlet(value = "/SalesmanController", loadOnStartup = 1)
+@WebServlet(value = "/SalesmanController")
 public class SalesmanController extends HttpServlet {
     private final SalesmanService salesService = new SalesmanService();
     private int pageSize;
@@ -77,7 +77,7 @@ public class SalesmanController extends HttpServlet {
         String jsonResult = mapper.writeValueAsString(result);
         response.getWriter().write(jsonResult);
 
-        System.out.println(jsonResult);
+//        System.out.println(jsonResult);
     }
 
     public void searchSalesman(HttpServletRequest request, HttpServletResponse response) throws IOException

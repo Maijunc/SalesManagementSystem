@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ContractService {
-    private ContractDAO contractDAO;
+    private final ContractDAO contractDAO;
 
     public ContractService() {
         contractDAO = new ContractDAO();

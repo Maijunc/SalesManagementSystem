@@ -43,7 +43,7 @@ public class CustomerService {
         return customerDAO.getCustomerById(customerID);
     }
 
-    public PaginatedResult<Customer> getSalesmenByPage(String searchKeyword, int curPage, int pageSize, List<Customer> customerList) {
+    public PaginatedResult<Customer> getCustomersByPage(String searchKeyword, int curPage, int pageSize, List<Customer> customerList) {
         int totalRecords = customerDAO.countCustomers(searchKeyword);
         int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
         totalPages = totalPages > 0 ? totalPages : 1;

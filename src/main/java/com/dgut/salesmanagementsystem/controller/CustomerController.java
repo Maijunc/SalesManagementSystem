@@ -151,7 +151,7 @@ public class CustomerController extends HttpServlet {
         int pageNum = request.getParameter("pageNum") == null ? 1 : Integer.parseInt(request.getParameter("pageNum"));
 
         List<Customer> customerList = customerService.searchCustomers(searchKeyword, pageNum, pageSize);
-        PaginatedResult<Customer> result = customerService.getSalesmenByPage(searchKeyword, curPage, pageSize, customerList);
+        PaginatedResult<Customer> result = customerService.getCustomersByPage(searchKeyword, curPage, pageSize, customerList);
 //        response.setContentType("application/json;charset=UTF-8");
 //
 //        try (PrintWriter out = response.getWriter()) {
@@ -162,6 +162,6 @@ public class CustomerController extends HttpServlet {
         String jsonResult = mapper.writeValueAsString(result);
         response.getWriter().write(jsonResult);
 
-        System.out.println(jsonResult);
+//        System.out.println(jsonResult);
     }
 }

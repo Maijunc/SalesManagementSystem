@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(value = "/ContractController", loadOnStartup = 1)
+@WebServlet(value = "/ContractController")
 public class ContractController extends HttpServlet{
     private final ContractService contractService = new ContractService();
     private int pageSize;

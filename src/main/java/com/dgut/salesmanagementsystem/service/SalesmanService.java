@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class SalesmanService {
-    private SalesmanDAO salesmanDAO = new SalesmanDAO();
+    private final SalesmanDAO salesmanDAO = new SalesmanDAO();
 
     // 添加销售人员
     public void addSalesman(String name, String email, String phone, BigDecimal totalSales, BigDecimal commission) {
