@@ -240,3 +240,7 @@ table tr:hover {
 .pagination button:hover {
     background-color: #005a9e;
 }
+
+.modal-search-button, .modal-jump-button{
+    margin-top: 10px;
+}

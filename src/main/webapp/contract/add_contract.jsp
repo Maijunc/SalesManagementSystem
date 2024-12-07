@@ -91,7 +91,7 @@
         <h2>选择销售人员</h2>
         <form method="GET" id="searchSalesmanForm">
             <input type="text" id="SalesmanSearchKeyword" placeholder="请输入销售人员姓名或ID">
-            <button type="button" onclick="searchSalesman()">查询</button>
+            <button type="button" onclick="searchSalesman()" class="modal-search-button">查询</button>
         </form>
         <table id="salesmanTable">
             <!-- 动态填充 -->
@@ -104,10 +104,10 @@
 <div id="customerModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeCustomerModal()">&times;</span>
-        <h2>选择销售人员</h2>
+        <h2>选择客户</h2>
         <form method="GET" id="searchCustomerForm">
-            <input type="text" id="customerSearchKeyword" placeholder="请输入销售人员姓名或ID">
-            <button type="button" onclick="searchCustomer()">查询</button>
+            <input type="text" id="customerSearchKeyword" placeholder="请输入客户姓名或ID">
+            <button type="button" onclick="searchCustomer()" class="modal-search-button">查询</button>
         </form>
         <table id="customerTable">
             <!-- 动态填充 -->
@@ -177,16 +177,56 @@
         };
         pagination.appendChild(prevButton);
 
-        for (let i = 1; i <= totalPages; i++) {
+        // 控制显示页码的范围
+        const pageRange = 5; // 显示前后最多 5 页
+        let startPage = Math.max(currentPage - pageRange, 1); // 当前页之前显示的页码
+        let endPage = Math.min(currentPage + pageRange, totalPages); // 当前页之后显示的页码
+
+        // 如果页码数量很多，显示 "省略号" 来简化分页显示
+        if (startPage > 1) {
+            const firstPage = document.createElement('a');
+            firstPage.href = '#';
+            firstPage.textContent = '1';
+            firstPage.onclick = (e) => {
+                e.preventDefault();
+                searchCustomer(1);
+            };
+            pagination.appendChild(firstPage);
+            if (startPage > 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                pagination.appendChild(ellipsis);
+            }
+        }
+
+        // 添加中间的页码链接
+        for (let i = startPage; i <= endPage; i++) {
             const pageLink = document.createElement('a');
             pageLink.href = '#';
             pageLink.textContent = i;
             pageLink.className = i === currentPage ? 'active' : '';
             pageLink.onclick = (e) => {
                 e.preventDefault();
-                searchSalesman(i);
+                searchCustomer(i);
             };
             pagination.appendChild(pageLink);
+        }
+
+        // 如果有更多页，显示 "省略号" 和最后一页
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                pagination.appendChild(ellipsis);
+            }
+            const lastPage = document.createElement('a');
+            lastPage.href = '#';
+            lastPage.textContent = totalPages;
+            lastPage.onclick = (e) => {
+                e.preventDefault();
+                searchCustomer(totalPages);
+            };
+            pagination.appendChild(lastPage);
         }
 
         const nextButton = document.createElement('a');
@@ -202,7 +242,7 @@
         const jumpTo = document.createElement('span');
         jumpTo.innerHTML = `
             跳转到: <input type="number" min="1" max="\${totalPages}" value="\${currentPage}" id="jumpToPage">
-            <button onclick="searchSalesman(document.getElementById('jumpToPage').value)">跳转</button>
+            <button onclick="searchSalesman(document.getElementById('jumpToPage').value)" class="modal-jump-button">跳转</button>
         `;
         pagination.appendChild(jumpTo);
     }
@@ -255,17 +295,43 @@
         const totalPages = data.totalPages || 1;
         const currentPage = data.currentPage || 1;
 
+        // 创建一个 <a> 标签并设置它的href 为 #，使其成为一个链接按钮。
         const prevButton = document.createElement('a');
         prevButton.href = '#';
         prevButton.textContent = '上一页';
         prevButton.className = currentPage === 1 ? 'disabled' : '';
+        // 为按钮绑定 onclick 事件
         prevButton.onclick = (e) => {
             e.preventDefault();
             if (currentPage > 1) searchCustomer(currentPage - 1);
         };
+        // 将这个按钮添加到 pagination 容器中。
         pagination.appendChild(prevButton);
 
-        for (let i = 1; i <= totalPages; i++) {
+        // 控制显示页码的范围
+        const pageRange = 5; // 显示前后最多 5 页
+        let startPage = Math.max(currentPage - pageRange, 1); // 当前页之前显示的页码
+        let endPage = Math.min(currentPage + pageRange, totalPages); // 当前页之后显示的页码
+
+        // 如果页码数量很多，显示 "省略号" 来简化分页显示
+        if (startPage > 1) {
+            const firstPage = document.createElement('a');
+            firstPage.href = '#';
+            firstPage.textContent = '1';
+            firstPage.onclick = (e) => {
+                e.preventDefault();
+                searchCustomer(1);
+            };
+            pagination.appendChild(firstPage);
+            if (startPage > 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                pagination.appendChild(ellipsis);
+            }
+        }
+
+        // 添加中间的页码链接
+        for (let i = startPage; i <= endPage; i++) {
             const pageLink = document.createElement('a');
             pageLink.href = '#';
             pageLink.textContent = i;
@@ -275,6 +341,23 @@
                 searchCustomer(i);
             };
             pagination.appendChild(pageLink);
+        }
+
+        // 如果有更多页，显示 "省略号" 和最后一页
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                pagination.appendChild(ellipsis);
+            }
+            const lastPage = document.createElement('a');
+            lastPage.href = '#';
+            lastPage.textContent = totalPages;
+            lastPage.onclick = (e) => {
+                e.preventDefault();
+                searchCustomer(totalPages);
+            };
+            pagination.appendChild(lastPage);
         }
 
         const nextButton = document.createElement('a');
@@ -290,9 +373,15 @@
         const jumpTo = document.createElement('span');
         jumpTo.innerHTML = `
             跳转到: <input type="number" min="1" max="\${totalPages}" value="\${currentPage}" id="jumpToPage">
-            <button onclick="searchCustomer(document.getElementById('jumpToPage').value)">跳转</button>
+            <button onclick="searchCustomer(document.getElementById('jumpToPage').value)" class="modal-jump-button">跳转</button>
         `;
         pagination.appendChild(jumpTo);
+    }
+
+    /* 页面加载的时候就加载一次 */
+    window.onload=function(){
+        searchCustomer();
+        searchSalesman()
     }
 </script>
 </body>
