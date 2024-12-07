@@ -1,12 +1,7 @@
 package com.dgut.salesmanagementsystem.controller;
 
-import com.dgut.salesmanagementsystem.pojo.Contract;
-import com.dgut.salesmanagementsystem.pojo.ContractSearchCriteria;
-import com.dgut.salesmanagementsystem.pojo.ContractStatus;
-import com.dgut.salesmanagementsystem.pojo.Customer;
+import com.dgut.salesmanagementsystem.pojo.*;
 import com.dgut.salesmanagementsystem.service.ContractService;
-import com.dgut.salesmanagementsystem.service.CustomerService;
-import com.dgut.salesmanagementsystem.service.SalesmanService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,7 +10,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 @WebServlet(value = "/ContractController")
 public class ContractController extends HttpServlet{
@@ -32,15 +28,15 @@ public class ContractController extends HttpServlet{
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
-        if("add".equals(action))
-            addContract(req, resp);
-        else
-            searchContract(req, resp);
+
+        searchContract(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("../contract/manage_contracts.jsp").forward(req, resp);
+        String action = req.getParameter("action");
+        if("add".equals(action))
+            addContract(req, resp);
     }
 
     private void searchContract(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -93,6 +89,80 @@ public class ContractController extends HttpServlet{
     }
 
     private void addContract(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String contractName = req.getParameter("contractName");
+        String status = req.getParameter("contractStatus");
+        String startTimeStr = req.getParameter("startDate");
+        String endTimeStr = req.getParameter("endDate");
+        String customerIDStr = req.getParameter("customerID");
+        String salesmanIDStr = req.getParameter("salesmanID");
 
+        Integer customerID = null;
+        Integer salesmanID = null;
+        // 客户ID
+        if (customerIDStr != null && !customerIDStr.isEmpty()) {
+            try {
+                customerID = Integer.parseInt(customerIDStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        // 销售人员ID
+        if (salesmanIDStr != null && !salesmanIDStr.isEmpty()) {
+            try {
+                salesmanID = Integer.parseInt(salesmanIDStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Map<String, String[]> parameterMap = req.getParameterMap();
+        List<ContractItem> contractItems = new ArrayList<>();
+        Map<Integer, Integer> indexMap = new HashMap<>(); // 存储 index 与在 contractItems 中的下标映射
+        // 遍历所有参数，提取商品数据
+        parameterMap.forEach((key, value) -> {
+            if (key.startsWith("products[")) { // 检查是否是商品参数
+                // 提取索引
+                String indexStr = key.substring(key.indexOf("[") + 1, key.indexOf("]"));
+                int index = Integer.parseInt(indexStr);
+                // 如果此 index 没有出现过，扩充 contractItems 的容量并更新 indexMap
+                if (!indexMap.containsKey(index)) {
+                    indexMap.put(index, contractItems.size());
+                    contractItems.add(new ContractItem()); // 添加新的 ContractItem
+                }
+
+                ContractItem contractItem = contractItems.get(indexMap.get(index));
+
+                // 填充商品属性
+                if (key.endsWith(".productID")) {
+                    try {
+                        contractItem.setProductID(Integer.parseInt(value[0]));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                } else if (key.endsWith(".productName")) {
+                    contractItem.setProductName(value[0]);
+                } else if (key.endsWith(".quantity")) {
+                    try {
+                        contractItem.setQuantity(Integer.parseInt(value[0]));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                } else if (key.endsWith(".unitPrice")) {
+                    contractItem.setUnitPrice(new BigDecimal(value[0]));
+                }
+            }
+        });
+        ContractModifyCriteria criteria = new ContractModifyCriteria();
+        criteria.setContractName(contractName);
+        criteria.setStatus(status);
+        criteria.setSalesmanID(salesmanID);
+        criteria.setCustomerID(customerID);
+        criteria.setContractItemList(contractItems);
+        criteria.setStartDateStr(startTimeStr);
+        criteria.setEndDateStr(endTimeStr);
+
+        contractService.addContract(criteria);
     }
+
+
 }

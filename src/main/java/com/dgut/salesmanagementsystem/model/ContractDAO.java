@@ -1,14 +1,9 @@
 package com.dgut.salesmanagementsystem.model;
 
-import com.dgut.salesmanagementsystem.pojo.Contract;
-import com.dgut.salesmanagementsystem.pojo.ContractSearchCriteria;
-import com.dgut.salesmanagementsystem.pojo.ContractStatus;
-import com.dgut.salesmanagementsystem.pojo.Customer;
+import com.dgut.salesmanagementsystem.pojo.*;
 import com.dgut.salesmanagementsystem.tool.DatabaseConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,12 +47,6 @@ public class ContractDAO {
                 params.add(contractSearchCriteria.getEndDateStr());
             }
 
-            // 如果 endDateStr 不为空，则添加相关条件
-//            if (contractSearchCriteria.getEndDateStr() != null && !contractSearchCriteria.getEndDateStr().isEmpty()) {
-//                sqlBuilder.append(" AND end_date <= ?");
-//
-//            }
-
             // 添加分页条件
             sqlBuilder.append(" LIMIT ? OFFSET ?");
             params.add(pageSize);
@@ -92,18 +81,12 @@ public class ContractDAO {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (resultSet != null) resultSet.close();
-                if (preparedStatement != null) preparedStatement.close();
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            closeResources(connection, preparedStatement, resultSet);
         }
         return ret;
     }
 
-    public int countCustomers(ContractSearchCriteria contractSearchCriteria) {
+    public int countContracts(ContractSearchCriteria contractSearchCriteria) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -136,18 +119,12 @@ public class ContractDAO {
                 params.add(contractSearchCriteria.getStatus());
             }
 
-            // 如果 startDateStr 不为空，则添加相关条件
+            // 如果 startDateStr 和 endDateStr 不为空，则添加相关条件
             if (contractSearchCriteria.getStartDateStr() != null && !contractSearchCriteria.getStartDateStr().isEmpty() && contractSearchCriteria.getEndDateStr() != null && !contractSearchCriteria.getEndDateStr().isEmpty()) {
                 sqlBuilder.append(" AND start_date BETWEEN ? AND ?");
                 params.add(contractSearchCriteria.getStartDateStr());
                 params.add(contractSearchCriteria.getEndDateStr());
             }
-
-            // 如果 endDateStr 不为空，则添加相关条件
-//            if (contractSearchCriteria.getEndDateStr() != null && !contractSearchCriteria.getEndDateStr().isEmpty()) {
-//                sqlBuilder.append(" AND end_date <= ?");
-//                params.add(contractSearchCriteria.getEndDateStr());
-//            }
 
             // 构建最终的 SQL 查询语句
             String sql = sqlBuilder.toString();
@@ -165,14 +142,102 @@ public class ContractDAO {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (resultSet != null) resultSet.close();
-                if (preparedStatement != null) preparedStatement.close();
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            closeResources(connection, preparedStatement, resultSet);
         }
         return totalRecords;
+    }
+
+    public void addContract(ContractModifyCriteria criteria) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            // 获取数据库连接
+            connection = DatabaseConnection.getConnection();
+
+            // 1. 插入合同表
+            String sql = "INSERT INTO Contract (contract_name, contract_date, start_date, end_date, contract_status, total_amount, paid_amount, remaining_amount, customer_id, salesman_id) " +
+                    "VALUES (?, CURRENT_DATE, ?, ?, ?, ?, 0, ?, ?, ?)";
+
+            // 动态构建查询条件
+            List<Object> params = new ArrayList<>();  // 存储查询参数
+
+            preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            // 设置参数值
+            params.add(criteria.getContractName());
+            params.add(criteria.getStartDateStr());
+            params.add(criteria.getEndDateStr());
+            params.add(criteria.getStatus());
+            params.add(criteria.getTotalPrice());
+            params.add(criteria.getTotalPrice());
+            params.add(criteria.getCustomerID());
+            params.add(criteria.getSalesmanID());
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
+
+            // 执行插入
+            int affectedRows = preparedStatement.executeUpdate();
+
+            // 获取自动生成的合同ID
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int contractID = generatedKeys.getInt(1); // 获取自增的合同ID
+                        // 2. 插入合同商品项
+                        insertContractItems(contractID, criteria.getContractItemList());
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connection, preparedStatement, null);
+        }
+    }
+
+    // 插入合同商品项
+    private void insertContractItems(int contractID, List<ContractItem> contractItemList){
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            // 获取数据库连接
+            connection = DatabaseConnection.getConnection();
+
+            // 1. 插入合同表
+            String sql = "INSERT INTO ContractItem (contract_id, product_id, product_name, quantity, unit_price) "
+                    + "VALUES (?, ?, ?, ?, ?)";
+
+            preparedStatement = connection.prepareStatement(sql);
+
+            for (ContractItem item : contractItemList) {
+                preparedStatement.setInt(1, contractID); // 设置合同ID
+                preparedStatement.setInt(2, item.getProductID()); // 设置商品ID
+                preparedStatement.setString(3, item.getProductName()); // 设置商品名称
+                preparedStatement.setInt(4, item.getQuantity()); // 设置商品数量
+                preparedStatement.setBigDecimal(5, item.getUnitPrice()); // 设置商品单价
+
+                // 执行插入操作
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch(); // 批量执行插入操作
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connection, preparedStatement, null);
+        }
+    }
+
+    private void closeResources(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet) {
+        try {
+            if (resultSet != null) resultSet.close();
+            if (preparedStatement != null) preparedStatement.close();
+            if (connection != null) connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
