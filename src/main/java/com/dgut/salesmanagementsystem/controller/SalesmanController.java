@@ -97,7 +97,7 @@ public class SalesmanController extends HttpServlet {
         session.setAttribute("totalPages", totalPages);
         session.setAttribute("searchKeyword", searchKeyword);
 
-        response.sendRedirect("Salesman_management.jsp");
+        response.sendRedirect("salesman/salesman_management.jsp");
     }
 
     private void addSalesman(HttpServletRequest request, HttpServletResponse response) throws IOException {

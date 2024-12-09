@@ -3,83 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>新建合同</title>
+    <title>查看和编辑合同</title>
     <link rel="stylesheet" href="../css/add-contract.css">
+    <style>
+        .editable {
+            background-color: #e6f7ff;
+        }
+    </style>
 </head>
 <body>
-<h2>新建合同</h2>
-<form action="../ContractController" method="post" onsubmit="return validateForm()">
-    <input type="hidden" name="action" value="add">
 
-    <!-- 合同基本信息 -->
-    <div>
-        <label for="contractName">合同名称：</label>
-        <input type="text" id="contractName" name="contractName" required>
-    </div>
-    <div>
-        <label for="startDate">合同开始日期：</label>
-        <input type="date" id="startDate" name="startDate" required>
-    </div>
-    <div>
-        <label for="endDate">合同结束日期：</label>
-        <input type="date" id="endDate" name="endDate" required>
-    </div>
-    <div>
-        <label for="contractStatus">合同状态：</label>
-        <select id="contractStatus" name="contractStatus" required>
-            <option value="1">未开始</option>
-            <option value="2">进行中</option>
-            <option value="3">已完成</option>
-        </select>
-    </div>
+<div class="contract-details">
+    <h2>合同详情</h2>
+    <form id=contractForm action="../ContractController" method="post" onsubmit="return validateForm()">
+        <input type="hidden" name="action" value="edit">
+        <!-- 隐藏字段，用于提交合同ID -->
+        <input type="hidden" id="contractID" name="contractID">
 
-    <!-- 客户选择 -->
-    <div class="form-group">
-        <label for="salesmanInfo">客户:</label>
-        <input type="text" id="customerInfo" name="customerInfo" readonly onclick="editCustomerInfo()"
-               placeholder="点击选择客户">
-    </div>
-    <!-- 隐藏字段，用于提交客户ID -->
-    <input type="hidden" id="customerID" name="customerID">
+        <!-- 合同基本信息 -->
+        <div>
+            <label for="contractName">合同名称：</label>
+            <input type="text" id="contractName" name="contractName" disabled required>
+        </div>
+        <div>
+            <label for="startDate">合同开始日期：</label>
+            <input type="date" id="startDate" name="startDate" disabled required>
+        </div>
+        <div>
+            <label for="endDate">合同结束日期：</label>
+            <input type="date" id="endDate" name="endDate" disabled required>
+        </div>
+        <div>
+            <label for="contractStatus">合同状态：</label>
+            <select id="contractStatus" name="contractStatus" disabled required>
+                <option value="1">未开始</option>
+                <option value="2">进行中</option>
+                <option value="3">已完成</option>
+            </select>
+        </div>
 
-    <!-- 销售人员选择 -->
-    <div class="form-group">
-        <label for="salesmanInfo">销售人员:</label>
-        <input type="text" id="salesmanInfo" name="salesmanInfo" readonly onclick="editSalesmanInfo()"
-               placeholder="点击选择销售人员">
-    </div>
-    <!-- 隐藏字段，用于提交销售人员ID -->
-    <input type="hidden" id="salesmanID" name="salesmanID">
+        <!-- 客户选择 -->
+        <div class="form-group">
+            <label for="salesmanInfo">客户:</label>
+            <input type="text" id="customerInfo" name="customerInfo" readonly disabled onclick="editCustomerInfo()"
+                   placeholder="点击选择客户">
+        </div>
+        <!-- 隐藏字段，用于提交客户ID -->
+        <input type="hidden" id="customerID" name="customerID">
 
-    <!-- 商品列表 -->
-    <h3>商品列表</h3>
-    <button type="button" onclick="openProductModal()">选择商品</button>
-    <table id="productTable">
-        <thead>
-        <tr>
-            <th>商品ID</th>
-            <th>商品名称</th>
-            <th>数量</th>
-            <th>单价</th>
-            <th>操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- 动态填充 -->
-        </tbody>
-    </table>
-    <!-- 空列表提示 -->
-    <p id="emptyMessage" style="display: none; text-align: center; color: #777;">当前没有选择任何商品。</p>
+        <!-- 销售人员选择 -->
+        <div class="form-group">
+            <label for="salesmanInfo">销售人员:</label>
+            <input type="text" id="salesmanInfo" name="salesmanInfo" readonly disabled onclick="editSalesmanInfo()"
+                   placeholder="点击选择销售人员">
+        </div>
+        <!-- 隐藏字段，用于提交销售人员ID -->
+        <input type="hidden" id="salesmanID" name="salesmanID">
 
-    <!-- 清空按钮 -->
-    <div style="text-align: center; margin-top: 20px;">
-        <button type="button" onclick="clearAllProducts()" style="background-color: #ff4d4f; color: white;">清空所有商品</button>
-    </div>
+        <!-- 商品列表 -->
+        <h3>商品列表</h3>
+        <button id="selectProductButton" type="button" onclick="openProductModal()" style="display: none">选择商品</button>
+        <table id="productTable">
+            <thead>
+            <tr>
+                <th>商品ID</th>
+                <th>商品名称</th>
+                <th>数量</th>
+                <th>单价</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- 动态填充 -->
+            </tbody>
+        </table>
+        <!-- 空列表提示 -->
+        <p id="emptyMessage" style="display: none; text-align: center; color: #777;">当前没有选择任何商品。</p>
 
-    <div>
-        <button type="submit">保存合同</button>
-    </div>
-</form>
+        <!-- 清空按钮 -->
+        <div style="text-align: center; margin-top: 20px;">
+            <button id="clearButton" type="button" onclick="clearAllProducts()" style="background-color: #ff4d4f; color: white; display: none">清空所有商品</button>
+        </div>
+
+        <!-- 编辑按钮 -->
+        <button type="button" id="editButton" onclick="enableEdit()">编辑</button>
+        <!-- 保存按钮 -->
+        <button type="submit" id="saveButton" style="display: none;">保存</button>
+    </form>
+</div>
 
 <!-- 商品选择模态框 -->
 <div id="productModal" class="modal">
@@ -144,9 +155,87 @@
         <div class="pagination" id="customerPagination"></div>
     </div>
 </div>
+</body>
+</html>
 
 <script>
+    function loadContractData(contractID) {
+        // 使用AJAX进行请求
+        fetch(`../ContractController?contractID=\${contractID}&action=ajax`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // 填充合同详情
+                document.getElementById('contractName').value = data.contractName;
+                // 创建一个新的 Date 对象，传入时间戳
+                var startDate = new Date(data.startDate);
+                var endDate = new Date(data.endDate);
+                // 格式化为 YYYY-MM-DD 格式
+                var startDateFormatted = startDate.toISOString().split('T')[0]; // 获取 ISO 字符串并分割，获取日期部分
+                var endDateFormatted = endDate.toISOString().split('T')[0]; // 获取 ISO 字符串并分割，获取日期部分
+                document.getElementById('startDate').value = startDateFormatted;
+                document.getElementById('endDate').value = endDateFormatted;
+                document.getElementById('contractStatus').value = data.contractStatusInt;
+                document.getElementById('salesmanInfo').value = data.salesmanName;
+                document.getElementById('customerInfo').value = data.customerName;
+                document.getElementById('salesmanID').value = data.salesmanID;
+                document.getElementById('customerID').value = data.customerID;
+                document.getElementById('contractID').value = contractID;
+                // 填充商品列表
 
+                const table = document.getElementById('productTable').querySelector('tbody');
+
+                data.contractItemList.forEach(product => {
+                    const row = document.createElement('tr');
+                    console.log(product);
+                    // row.dataset.productID = productID; // 存储产品ID
+                    row.innerHTML = `
+                    <td>\${product.productID}<input type="hidden" name="products[\${product.productID}].productID" value="\${product.productID}"></td>
+                    <td>\${product.productName}<input type="hidden" name="products[\${product.productID}].productName" value="\${product.productName}"></td>
+                    <td contenteditable=false class="editable quantity-input" oninput="updateProductListSummary(); updateInputValue(this)" id="td-products[\${product.productID}].quantity">\${product.quantity}
+                        <input type="hidden" name="products[\${product.productID}].quantity">
+                    </td>
+                    <td contenteditable=false class="editable unit-price-input" oninput="updateProductListSummary(); updateInputValue(this)" id="td-products[\${product.productID}].unitPrice">\${product.unitPrice}
+                        <input type="hidden" name="products[\${product.productID}].unitPrice">
+                    </td>
+                    <td><button type="button" onclick="removeProduct(this)">删除</button></td>
+                    `;
+                    table.appendChild(row);
+
+                    updateInputValue(document.getElementById(`td-products[\${product.productID}].quantity`));
+                    updateInputValue(document.getElementById(`td-products[\${product.productID}].unitPrice`));
+                });
+                updateProductListSummary();
+            })
+            .catch(error => console.error('获取合同数据失败:', error));
+    }
+
+    // 启用编辑功能
+    function enableEdit() {
+        // 启用所有输入字段
+        const formElements = document.querySelectorAll('#contractForm input, #contractForm select');
+        formElements.forEach(element => {
+            element.disabled = false;
+        });
+
+        const formTdElements = document.querySelectorAll('#contractForm td.editable.quantity-input, #contractForm td.editable.unit-price-input');
+        formTdElements.forEach(element => {
+            element.setAttribute('contenteditable', 'true');  // 启用编辑
+            // console.log(element, 'contenteditable =', element.contenteditable);  // 输出元素和它的 contenteditable 值
+        });
+
+        searchCustomer();
+        searchSalesman();
+        searchProduct();
+
+        // 显示保存按钮，隐藏编辑按钮
+        document.getElementById('saveButton').style.display = 'inline-block';
+        document.getElementById('editButton').style.display = 'none';
+        document.getElementById('selectProductButton').style.display = 'inline-block';
+        document.getElementById('clearButton').style.display = 'inline-block';
+    }
+
+    /*  ----------------销售人员选择----------------  */
     function editSalesmanInfo() {
         document.getElementById('salesmanModal').style.display = 'block';
     }
@@ -171,7 +260,6 @@
                 table.innerHTML = '';
                 if (data.elementList && data.elementList.length > 0) {
                     data.elementList.forEach(salesman => {
-                        // console.log(salesman)
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>\${salesman.salesmanID}</td>
@@ -275,6 +363,7 @@
         pagination.appendChild(jumpTo);
     }
 
+    /*  ----------------客户选择----------------  */
     function editCustomerInfo() {
         document.getElementById('customerModal').style.display = 'block';
     }
@@ -405,6 +494,7 @@
         `;
         pagination.appendChild(jumpTo);
     }
+    /*  ----------------商品选择----------------  */
 
     // 打开商品选择模态框
     function openProductModal() {
@@ -446,7 +536,6 @@
             })
             .catch(error => console.error('查询失败:', error));
     }
-
     // 选择商品
     function selectProduct(productID, productName) {
         // 动态绑定
@@ -602,6 +691,8 @@
         } else {
             document.getElementById("emptyMessage").style.display = "none";
         }
+
+        console.log("productTableBody.children.length = " + productTableBody.children.length);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -682,6 +773,9 @@
             alert("请选择销售人员！");
             return false; // 阻止表单提交
         }
+        // console.log("customerID = " + customerID);
+        // console.log("salesmanID = " + salesmanID);
+        // console.log("contractID = " + contractID);
 
         // 验证商品列表
         const productTable = document.getElementById("productTable").getElementsByTagName("tbody")[0];
@@ -689,11 +783,11 @@
         let hasInvalidProducts = false;
 
         for (let i = 0; i < rows.length; i++) {
-            const quantity = parseInt(rows[i].cells[2].innerText.trim(), 10);
+            const quantity = parseFloat(rows[i].cells[2].innerText.trim());
             const unitPrice = parseFloat(rows[i].cells[3].innerText.trim());
 
-            // 验证数量
-            if (isNaN(quantity) || quantity < 0) {
+            // 验证 quantity 是否为整数
+            if (isNaN(quantity) || quantity < 0 || !Number.isInteger(quantity)) {
                 alert("商品数量必须是一个不小于 0 的整数！");
                 hasInvalidProducts = true;
                 break; // 跳出循环
@@ -715,13 +809,12 @@
         return true;
     }
 
-    /* 页面加载的时候就加载一次 */
-    window.onload=function(){
-        searchCustomer();
-        searchSalesman();
-        searchProduct();
-        updateProductListSummary();
-    }
+
+    // 初始化合同数据
+    window.onload = function() {
+        var contractID = <%= request.getParameter("contractID") %>; // 直接将 contractID 插入到 JavaScript 变量中
+        loadContractData(contractID);
+    };
 </script>
 </body>
 </html>

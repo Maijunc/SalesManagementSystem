@@ -115,7 +115,7 @@
             </td>
 <%--            <td><%= contractStatus %></td>--%>
             <td class="action-buttons" style="text-align: center">
-                <a href="edit_contract.jsp?contractID=<%= contract.getContractID() %>">修改</a>
+                <a href="contract_view.jsp?contractID=<%= contract.getContractID() %>">查看</a>
                 <a href="../ContractController?action=delete&contractID=<%= contract.getContractID() %>"
                    class="delete" onclick="return confirm('确认删除该合同吗？')">删除</a>
             </td>
@@ -135,15 +135,21 @@
 
     <!-- 分页 -->
     <div class="pagination">
-        <a href="ContractController?pageNum=<%= currentPage - 1 %>&contractName=<%= session.getAttribute("contractName") %>
-        &contractID=<%= session.getAttribute("contractName")%>&status=<%= session.getAttribute("status")%>
-         &start_time=<%= session.getAttribute("start_time")%> &end_time=<%= session.getAttribute("end_time")%>>"
-                <%= (currentPage == 1) ? "style='pointer-events: none; color: gray;'" : "" %>>上一页</a>
+        <a href="../ContractController?pageNum=<%= currentPage - 1 %>
+        <%= session.getAttribute("contractName") != null ? "&contractName=" + session.getAttribute("contractName") : "" %>
+        <%= session.getAttribute("contractID") != null ? "&contractID=" + session.getAttribute("contractID") : "" %>
+        <%= session.getAttribute("status") != null ? "&status=" + session.getAttribute("status") : "" %>
+        <%= session.getAttribute("start_time") != null ? "&start_time=" + session.getAttribute("start_time") : "" %>
+        <%= session.getAttribute("end_time") != null ? "&end_time=" + session.getAttribute("end_time") : "" %>"
+        <%= (currentPage == 1) ? "style='pointer-events: none; color: gray;'" : "" %>>上一页</a>
         第 <%= currentPage %> 页 / 共 <%= totalPages %> 页
-        <a href="ContractController?pageNum=<%= currentPage + 1 %>&contractName=<%= session.getAttribute("contractName") %>
-        &contractID=<%= session.getAttribute("contractName")%>&status=<%= session.getAttribute("status")%>
-         &start_time=<%= session.getAttribute("start_time")%> &end_time=<%= session.getAttribute("end_time")%>>"
-                <%= (currentPage == 1) ? "style='pointer-events: none; color: gray;'" : "" %>>上一页</a>
+        <a href="../ContractController?pageNum=<%= currentPage + 1 %>
+        <%= session.getAttribute("contractName") != null ? "&contractName=" + session.getAttribute("contractName") : "" %>
+        <%= session.getAttribute("contractID") != null ? "&contractID=" + session.getAttribute("contractID") : "" %>
+        <%= session.getAttribute("status") != null ? "&status=" + session.getAttribute("status") : "" %>
+        <%= session.getAttribute("start_time") != null ? "&start_time=" + session.getAttribute("start_time") : "" %>
+        <%= session.getAttribute("end_time") != null ? "&end_time=" + session.getAttribute("end_time") : "" %>"
+        <%= (currentPage == totalPages) ? "style='pointer-events: none; color: gray;'" : "" %>>下一页</a>
     </div>
 </div>
 

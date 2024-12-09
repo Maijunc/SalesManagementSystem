@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContractDAO {
+
     public List<Contract> searchContracts(ContractSearchCriteria contractSearchCriteria, int pageNum, int pageSize) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -155,8 +156,17 @@ public class ContractDAO {
             connection = DatabaseConnection.getConnection();
 
             // 1. 插入合同表
-            String sql = "INSERT INTO Contract (contract_name, contract_date, start_date, end_date, contract_status, total_amount, paid_amount, remaining_amount, customer_id, salesman_id) " +
-                    "VALUES (?, CURRENT_DATE, ?, ?, ?, ?, 0, ?, ?, ?)";
+            String sql = "INSERT INTO Contract (" +
+                    " contract_name," +
+                    " contract_date," +
+                    " start_date," +
+                    " end_date," +
+                    " contract_status," +
+                    " total_amount," +
+                    " paid_amount," +
+                    " customer_id," +
+                    " salesman_id) " +
+                    "VALUES (?, CURRENT_DATE, ?, ?, ?, ?, 0, ?, ?)";
 
             // 动态构建查询条件
             List<Object> params = new ArrayList<>();  // 存储查询参数
@@ -169,7 +179,7 @@ public class ContractDAO {
             params.add(criteria.getEndDateStr());
             params.add(criteria.getStatus());
             params.add(criteria.getTotalPrice());
-            params.add(criteria.getTotalPrice());
+//            params.add(criteria.getTotalPrice());
             params.add(criteria.getCustomerID());
             params.add(criteria.getSalesmanID());
             // 设置查询参数
@@ -190,6 +200,79 @@ public class ContractDAO {
                     }
                 }
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connection, preparedStatement, null);
+        }
+    }
+
+    public void editContract(ContractModifyCriteria criteria) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            // 获取数据库连接
+            connection = DatabaseConnection.getConnection();
+            connection.setAutoCommit(false); // 开启事务
+
+            // 1. 更新合同表
+            String sql = "UPDATE Contract SET " +
+                    "contract_name = ?, " +
+                    "start_date = ?, " +
+                    "end_date = ?, " +
+                    "contract_status = ?, " +
+                    "total_amount = ?, " +
+                    "customer_id = ?, " +
+                    "salesman_id = ? " +
+                    "WHERE contract_id = ?";
+
+            // 动态构建查询条件
+            List<Object> params = new ArrayList<>();  // 存储查询参数
+
+            preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            // 设置参数值
+            params.add(criteria.getContractName());
+            params.add(criteria.getStartDateStr());
+            params.add(criteria.getEndDateStr());
+            params.add(criteria.getStatus());
+            params.add(criteria.getTotalPrice());
+            params.add(criteria.getCustomerID());
+            params.add(criteria.getSalesmanID());
+            params.add(criteria.getContractID());
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
+
+            // 执行插入
+            preparedStatement.executeUpdate();
+
+            // 2. 删除原有的 ContractItem 记录
+            String deleteSql = "DELETE FROM ContractItem WHERE contract_id = ?";
+            try (PreparedStatement deleteStmt = connection.prepareStatement(deleteSql)) {
+                deleteStmt.setInt(1, criteria.getContractID());
+                deleteStmt.executeUpdate();
+            }
+
+            // 3. 插入新的合同项
+            String insertContractItemSql = "INSERT INTO ContractItem (contract_id, product_id, product_name, quantity, unit_price) " +
+                    "VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement insertStmt = connection.prepareStatement(insertContractItemSql)) {
+                for (ContractItem item : criteria.getContractItemList()) {
+                    insertStmt.setInt(1, criteria.getContractID());
+                    insertStmt.setInt(2, item.getProductID());
+                    insertStmt.setString(3, item.getProductName());
+                    insertStmt.setInt(4, item.getQuantity());
+                    insertStmt.setBigDecimal(5, item.getUnitPrice());
+                    insertStmt.addBatch(); // 批量插入
+                }
+                insertStmt.executeBatch(); // 执行批量插入
+            }
+
+            // 提交事务
+            connection.commit();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -229,6 +312,95 @@ public class ContractDAO {
         } finally {
             closeResources(connection, preparedStatement, null);
         }
+    }
+
+    public Contract getContractById(Integer contractID) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        Contract contract = null;
+        ResultSet resultSet = null;
+        try {
+            // 获取数据库连接
+            connection = DatabaseConnection.getConnection();
+
+            String sql = "SELECT * FROM Contract WHERE contract_id = ?";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, contractID);
+
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                contract = mapResultSetToContract(resultSet);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭资源
+            closeResources(connection, preparedStatement, resultSet);
+        }
+
+        return contract;
+    }
+
+    public List<ContractItem> getContractItemListById(Integer contractID) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        List<ContractItem> ret = new ArrayList<>();
+        ResultSet resultSet = null;
+        try {
+            // 获取数据库连接
+            connection = DatabaseConnection.getConnection();
+
+            String sql = "SELECT * FROM ContractItem WHERE contract_id = ?";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, contractID);
+
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                ContractItem contractItem = mapResultSetToContractItem(resultSet);
+                ret.add(contractItem);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭资源
+            closeResources(connection, preparedStatement, resultSet);
+        }
+
+        return ret;
+    }
+
+    private ContractItem mapResultSetToContractItem(ResultSet resultSet) throws Exception {
+        ContractItem contractItem = new ContractItem();
+
+        // 从ResultSet中获取各列的值并设置到ContractItem对象中
+        contractItem.setContractItemID(resultSet.getInt("contract_item_id"));
+        contractItem.setContractID(resultSet.getInt("contract_id"));
+        contractItem.setProductID(resultSet.getInt("product_id"));
+        contractItem.setProductName(resultSet.getString("product_name"));
+        contractItem.setQuantity(resultSet.getInt("quantity"));
+        contractItem.setUnitPrice(resultSet.getBigDecimal("unit_price"));
+        contractItem.setTotalPrice(resultSet.getBigDecimal("total_price"));
+
+        return contractItem;
+    }
+
+    private Contract mapResultSetToContract(ResultSet resultSet) throws Exception {
+        Contract contract = new Contract();
+
+        // 从ResultSet中获取各列的值并设置到Contract对象中
+        contract.setContractID(resultSet.getInt("contract_id"));
+        contract.setContractName(resultSet.getString("contract_name"));
+        contract.setContractDate(resultSet.getDate("contract_date"));
+        contract.setStartDate(resultSet.getDate("start_date"));
+        contract.setEndDate(resultSet.getDate("end_date"));
+        contract.setContractStatus(ContractStatus.fromString(resultSet.getString("contract_status")));
+        contract.setTotalAmount(resultSet.getBigDecimal("total_amount"));
+        contract.setPaidAmount(resultSet.getBigDecimal("paid_amount"));
+        contract.setRemainingAmount(resultSet.getBigDecimal("remaining_amount"));
+        contract.setCustomerID(resultSet.getInt("customer_id"));
+        contract.setSalesmanID(resultSet.getInt("salesman_id"));
+
+        return contract;
     }
 
     private void closeResources(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet) {

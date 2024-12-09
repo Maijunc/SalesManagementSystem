@@ -17,7 +17,6 @@ public enum ContractStatus {
 
     public static String getChineseStr(String value)
     {
-        // Java 后端示例
         if ("not_started".equals(value)) {
             return "未开始";
         } else if ("in_progress".equals(value)) {
@@ -51,5 +50,17 @@ public enum ContractStatus {
             }
         }
         throw new IllegalArgumentException("Invalid status string: " + status);
+    }
+
+    public static int getInt(String value) {
+        if ("not_started".equals(value)) {
+            return 1;
+        } else if ("in_progress".equals(value)) {
+            return 2;
+        } else if ("completed".equals(value)) {
+            return 3;
+        }
+
+        throw new IllegalArgumentException("Invalid value string: " + value);
     }
 }
