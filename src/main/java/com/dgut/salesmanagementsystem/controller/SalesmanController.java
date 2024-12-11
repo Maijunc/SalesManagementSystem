@@ -88,7 +88,7 @@ public class SalesmanController extends HttpServlet {
         int pageNum = request.getParameter("pageNum") == null ? 1 : Integer.parseInt(request.getParameter("pageNum"));
 
         List<Salesman> salesmanList = salesService.searchSalesmen(searchKeyword, pageNum, pageSize);
-        // 获取总记录数以计算总页数
+        // 获取总页数
         int totalPages = salesService.getTotalPages(searchKeyword, pageSize);
         // 设置分页相关属性
         HttpSession session = request.getSession();

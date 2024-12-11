@@ -51,7 +51,7 @@
         </div>
         <div class = actions>
             <button type="submit">查询</button>
-            <button type="reset">清空</button>
+            <button type="submit" onclick="resetForm()">重置</button>
 
         </div>
     </form>
@@ -116,8 +116,8 @@
 <%--            <td><%= contractStatus %></td>--%>
             <td class="action-buttons" style="text-align: center">
                 <a href="contract_view.jsp?contractID=<%= contract.getContractID() %>">查看</a>
-                <a href="../ContractController?action=delete&contractID=<%= contract.getContractID() %>"
-                   class="delete" onclick="return confirm('确认删除该合同吗？')">删除</a>
+                <a href="../PurchaseListController?PageNum=1<%= "&contractID=" + contract.getContractID() %><%= "&contractName=" + contract.getContractName()%>"
+                   class="purchaseList">采购清单</a>
             </td>
         </tr>
         <%
@@ -135,21 +135,53 @@
 
     <!-- 分页 -->
     <div class="pagination">
-        <a href="../ContractController?pageNum=<%= currentPage - 1 %>
-        <%= session.getAttribute("contractName") != null ? "&contractName=" + session.getAttribute("contractName") : "" %>
-        <%= session.getAttribute("contractID") != null ? "&contractID=" + session.getAttribute("contractID") : "" %>
-        <%= session.getAttribute("status") != null ? "&status=" + session.getAttribute("status") : "" %>
-        <%= session.getAttribute("start_time") != null ? "&start_time=" + session.getAttribute("start_time") : "" %>
-        <%= session.getAttribute("end_time") != null ? "&end_time=" + session.getAttribute("end_time") : "" %>"
-        <%= (currentPage == 1) ? "style='pointer-events: none; color: gray;'" : "" %>>上一页</a>
+        <%
+            StringBuilder url = new StringBuilder("../ContractController?pageNum=");
+            url.append(currentPage - 1);
+
+            if (session.getAttribute("contractName") != null) {
+                url.append("&contractName=").append(session.getAttribute("contractName"));
+            }
+            if (session.getAttribute("contractID") != null) {
+                url.append("&contractID=").append(session.getAttribute("contractID"));
+            }
+            if (session.getAttribute("status") != null) {
+                url.append("&status=").append(session.getAttribute("status"));
+            }
+            if (session.getAttribute("start_time") != null) {
+                url.append("&start_time=").append(session.getAttribute("start_time"));
+            }
+            if (session.getAttribute("end_time") != null) {
+                url.append("&end_time=").append(session.getAttribute("end_time"));
+            }
+
+            String urlString = url.toString();
+        %>
+        <a href="<%= urlString %>" <%= (currentPage == 1) ? "style='pointer-events: none; color: gray;'" : "" %>>上一页</a>
         第 <%= currentPage %> 页 / 共 <%= totalPages %> 页
-        <a href="../ContractController?pageNum=<%= currentPage + 1 %>
-        <%= session.getAttribute("contractName") != null ? "&contractName=" + session.getAttribute("contractName") : "" %>
-        <%= session.getAttribute("contractID") != null ? "&contractID=" + session.getAttribute("contractID") : "" %>
-        <%= session.getAttribute("status") != null ? "&status=" + session.getAttribute("status") : "" %>
-        <%= session.getAttribute("start_time") != null ? "&start_time=" + session.getAttribute("start_time") : "" %>
-        <%= session.getAttribute("end_time") != null ? "&end_time=" + session.getAttribute("end_time") : "" %>"
-        <%= (currentPage == totalPages) ? "style='pointer-events: none; color: gray;'" : "" %>>下一页</a>
+        <%
+            url = new StringBuilder("../ContractController?pageNum=");
+            url.append(currentPage + 1);
+
+            if (session.getAttribute("contractName") != null) {
+                url.append("&contractName=").append(session.getAttribute("contractName"));
+            }
+            if (session.getAttribute("contractID") != null) {
+                url.append("&contractID=").append(session.getAttribute("contractID"));
+            }
+            if (session.getAttribute("status") != null) {
+                url.append("&status=").append(session.getAttribute("status"));
+            }
+            if (session.getAttribute("start_time") != null) {
+                url.append("&start_time=").append(session.getAttribute("start_time"));
+            }
+            if (session.getAttribute("end_time") != null) {
+                url.append("&end_time=").append(session.getAttribute("end_time"));
+            }
+
+            urlString = url.toString();
+        %>
+        <a href="<%= urlString %>" <%= (currentPage == totalPages) ? "style='pointer-events: none; color: gray;'" : "" %>>下一页</a>
     </div>
 </div>
 
@@ -186,6 +218,15 @@
 
     startTimeInput.addEventListener('change', validateDates);
     endTimeInput.addEventListener('change', validateDates);
+
+    // 清空表单的函数
+    function resetForm() {
+        // 获取表单元素
+        var form = document.getElementById('search-form');
+
+        // 使用reset()方法来重置表单的所有内容
+        form.reset();
+    }
 </script>
 </body>
 </html>

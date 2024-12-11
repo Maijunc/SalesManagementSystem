@@ -63,7 +63,7 @@ public class CustomerController extends HttpServlet {
         int pageNum = req.getParameter("pageNum") == null ? 1 : Integer.parseInt(req.getParameter("pageNum"));
 
         List<Customer> customerList = customerService.searchCustomers(searchKeyword, pageNum, pageSize);
-        // 获取总记录数以计算总页数
+        // 获取总页数
         int totalPages = customerService.getTotalPages(searchKeyword, pageSize);
         // 设置分页相关属性
         HttpSession session = req.getSession();

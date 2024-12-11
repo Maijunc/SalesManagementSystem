@@ -1,9 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="com.dgut.salesmanagementsystem.pojo.Customer" %>
-<%@ page import="com.dgut.salesmanagementsystem.model.CustomerDAO" %>
-<%@ page import="com.dgut.salesmanagementsystem.controller.CustomerController" %>
-<%@ page import="com.dgut.salesmanagementsystem.model.UserDAO" %>
+<%@ page import="com.dgut.salesmanagementsystem.pojo.User" %>
+
+<%
+  User user = (User) session.getAttribute("user");
+  if (user == null || !"SalesManager".equals(user.getRole().getRole())) {
+    response.sendRedirect("../login.jsp");
+    return;
+  }
+%>
+
 <!-- 导入 Customer 类 -->
 <!DOCTYPE html>
 <html lang="en">

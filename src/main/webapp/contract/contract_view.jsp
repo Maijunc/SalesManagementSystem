@@ -182,6 +182,9 @@
                 document.getElementById('customerID').value = data.customerID;
                 document.getElementById('contractID').value = contractID;
                 // 填充商品列表
+                if(data.contractStatusInt != 1) {
+                    document.getElementById('editButton').setAttribute('style', 'color: gray;');
+                }
 
                 const table = document.getElementById('productTable').querySelector('tbody');
 
@@ -212,6 +215,10 @@
 
     // 启用编辑功能
     function enableEdit() {
+        if(document.getElementById('contractStatus').value != 1) {
+            alert("合同只有在履行前可以修改！");
+            return;
+        }
         // 启用所有输入字段
         const formElements = document.querySelectorAll('#contractForm input, #contractForm select');
         formElements.forEach(element => {
@@ -221,7 +228,6 @@
         const formTdElements = document.querySelectorAll('#contractForm td.editable.quantity-input, #contractForm td.editable.unit-price-input');
         formTdElements.forEach(element => {
             element.setAttribute('contenteditable', 'true');  // 启用编辑
-            // console.log(element, 'contenteditable =', element.contenteditable);  // 输出元素和它的 contenteditable 值
         });
 
         searchCustomer();
@@ -357,7 +363,7 @@
 
         const jumpTo = document.createElement('span');
         jumpTo.innerHTML = `
-            跳转到: <input type="number" min="1" max="\${totalPages}" value="\${currentPage}" id="jumpToPage">
+            跳转到: <input type="number" min="1" max="\${totalPages}" value="\${currentPage}" id="jumpToPage" oninput="if(value>\${totalPages})value=\${totalPages};if(value<1)value=1;">
             <button onclick="searchSalesman(document.getElementById('jumpToPage').value)" class="modal-jump-button">跳转</button>
         `;
         pagination.appendChild(jumpTo);
@@ -489,7 +495,7 @@
 
         const jumpTo = document.createElement('span');
         jumpTo.innerHTML = `
-            跳转到: <input type="number" min="1" max="\${totalPages}" value="\${currentPage}" id="jumpToPage">
+            跳转到: <input type="number" min="1" max="\${totalPages}" value="\${currentPage}" id="jumpToPage" oninput="if(value>\${totalPages})value=\${totalPages};if(value<1)value=1;">
             <button onclick="searchCustomer(document.getElementById('jumpToPage').value)" class="modal-jump-button">跳转</button>
         `;
         pagination.appendChild(jumpTo);
@@ -561,7 +567,7 @@
             row.innerHTML = `
         <td>\${productID}<input type="hidden" name="products[\${productID}].productID" value="\${productID}"></td>
         <td>\${productName}<input type="hidden" name="products[\${productID}].productName" value="\${productName}"></td>
-        <td contenteditable="true" class="editable quantity-input" oninput="updateProductListSummary(); updateInputValue(this)" id="td-products[\${productID}].quantity">\${quantity}
+        <td contenteditable="true" class="editable quantity-input" oninput="updateProductListSummary(); updateInputValue(this)" id="td-products[\${productID}].quantity" >\${quantity}
             <input type="hidden" name="products[\${productID}].quantity">
         </td>
         <td contenteditable="true" class="editable unit-price-input" oninput="updateProductListSummary(); updateInputValue(this)" id="td-products[\${productID}].unitPrice">\${unitPrice}
@@ -661,7 +667,7 @@
 
         const jumpTo = document.createElement('span');
         jumpTo.innerHTML = `
-            跳转到: <input type="number" min="1" max="\${totalPages}" value="\${currentPage}" id="jumpToPage">
+            跳转到: <input type="number" min="1" max="\${totalPages}" value="\${currentPage}" id="jumpToPage" oninput="if(value>\${totalPages})value=\${totalPages};if(value<1)value=1;">
             <button onclick="searchProduct(document.getElementById('jumpToPage').value)" class="modal-jump-button">跳转</button>
         `;
         pagination.appendChild(jumpTo);

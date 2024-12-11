@@ -213,6 +213,14 @@ table tr:hover {
     background-color: #c82333;
 }
 
+.action-buttons a.purchaseList {
+    background-color: #fd7e14;
+}
+
+.action-buttons a.purchaseList:hover {
+    background-color: #e06c00;
+}
+
 .add-button {
     text-decoration: none;
 }

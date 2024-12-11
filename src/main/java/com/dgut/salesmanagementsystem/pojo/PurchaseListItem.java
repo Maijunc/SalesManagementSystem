@@ -1,13 +1,41 @@
 package com.dgut.salesmanagementsystem.pojo;
 
-import java.math.BigDecimal;
-
 public class PurchaseListItem {
-    private Integer productID; //商品
-    private Integer quantity; //数量
-    private String productName; //商品名字
-    private BigDecimal unitPrice; // 单价
+    private int purchaseListItemID; // 唯一标识
+    private int purchaseListID;     // 采购清单ID（外键）
+    private int productId;          // 商品ID（外键）
+    private int quantity;           // 购买的商品数量
 
+    public int getPurchaseListItemID() {
+        return purchaseListItemID;
+    }
 
+    public void setPurchaseListItemID(int purchaseListItemID) {
+        this.purchaseListItemID = purchaseListItemID;
+    }
 
+    public int getPurchaseListID() {
+        return purchaseListID;
+    }
+
+    public void setPurchaseListID(int purchaseListID) {
+        this.purchaseListID = purchaseListID;
+    }
+
+    public int getProductId() {
+        return productId;
+    }
+
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 }
+

@@ -1,9 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.dgut.salesmanagementsystem.pojo.Customer" %>
-<%@ page import="com.dgut.salesmanagementsystem.model.CustomerDAO" %>
 <%@ page import="com.dgut.salesmanagementsystem.pojo.CustomerType" %>
 <%@ page import="com.dgut.salesmanagementsystem.pojo.CustomerStatus" %>
 <%@ page import="com.dgut.salesmanagementsystem.controller.CustomerController" %>
+<%@ page import="com.dgut.salesmanagementsystem.pojo.User" %>
+
+<%
+  User user = (User) session.getAttribute("user");
+  if (user == null || !"SalesManager".equals(user.getRole().getRole())) {
+    response.sendRedirect("../login.jsp");
+    return;
+  }
+%>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

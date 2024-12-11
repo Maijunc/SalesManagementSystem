@@ -269,7 +269,7 @@
 
         const jumpTo = document.createElement('span');
         jumpTo.innerHTML = `
-            跳转到: <input type="number" min="1" max="\${totalPages}" value="\${currentPage}" id="jumpToPage">
+            跳转到: <input type="number" min="1" max="\${totalPages}" value="\${currentPage}" id="jumpToPage" oninput="if(value>\${totalPages})value=\${totalPages};if(value<1)value=1;">
             <button onclick="searchSalesman(document.getElementById('jumpToPage').value)" class="modal-jump-button">跳转</button>
         `;
         pagination.appendChild(jumpTo);
@@ -433,8 +433,8 @@
                         <td>\${product.productID}</td>
                         <td>\${product.productName}</td>
                         <td>\${product.stockQuantity}</td>
-                        <td><input type="number" min="1" max="\${product.stock}" value="1" id="quantity-\${product.productID}"></td>
-                        <td><input type="number" min="0" step="0.01" value="100" id="unitPrice-\${product.productID}"></td>
+                        <td><input type="number" min="1" max="\${product.stock}" value="1" id="quantity-\${product.productID}" oninput="if(value>\${product.stock})value=\${product.stock};if(value<1)value=1;"></td>
+                        <td><input type="number" min="0" step="0.01" value="100" id="unitPrice-\${product.productID}" oninput="if(value<0)value=0;"></td>
                         <td><button onclick="selectProduct('\${product.productID}', '\${product.productName}')">选择</button></td>
                     `;
                         table.appendChild(row);
@@ -572,7 +572,7 @@
 
         const jumpTo = document.createElement('span');
         jumpTo.innerHTML = `
-            跳转到: <input type="number" min="1" max="\${totalPages}" value="\${currentPage}" id="jumpToPage">
+            跳转到: <input type="number" min="1" max="\${totalPages}" value="\${currentPage}" id="jumpToPage" oninput="if(value>\${totalPages})value=\${totalPages};if(value<1)value=1;">
             <button onclick="searchProduct(document.getElementById('jumpToPage').value)" class="modal-jump-button">跳转</button>
         `;
         pagination.appendChild(jumpTo);
@@ -720,7 +720,6 @@
         searchCustomer();
         searchSalesman();
         searchProduct();
-        updateProductListSummary();
     }
 </script>
 </body>
