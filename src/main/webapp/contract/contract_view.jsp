@@ -164,7 +164,7 @@
         fetch(`../ContractController?contractID=\${contractID}&action=ajax`)
             .then(response => response.json())
             .then(data => {
-                console.log(data);
+                // console.log(data);
                 // 填充合同详情
                 document.getElementById('contractName').value = data.contractName;
                 // 创建一个新的 Date 对象，传入时间戳
@@ -183,14 +183,14 @@
                 document.getElementById('contractID').value = contractID;
                 // 填充商品列表
                 if(data.contractStatusInt != 1) {
-                    document.getElementById('editButton').setAttribute('style', 'color: gray;');
+                    document.getElementById('editButton').setAttribute('style', 'color: #A0A0A0; background-color: #E0E0E0; border: 1px solid #D0D0D0;');
                 }
 
                 const table = document.getElementById('productTable').querySelector('tbody');
 
                 data.contractItemList.forEach(product => {
                     const row = document.createElement('tr');
-                    console.log(product);
+                    // console.log(product);
                     // row.dataset.productID = productID; // 存储产品ID
                     row.innerHTML = `
                     <td>\${product.productID}<input type="hidden" name="products[\${product.productID}].productID" value="\${product.productID}"></td>
@@ -201,7 +201,7 @@
                     <td contenteditable=false class="editable unit-price-input" oninput="updateProductListSummary(); updateInputValue(this)" id="td-products[\${product.productID}].unitPrice">\${product.unitPrice}
                         <input type="hidden" name="products[\${product.productID}].unitPrice">
                     </td>
-                    <td><button type="button" onclick="removeProduct(this)">删除</button></td>
+                    <td><button type="button" onclick="removeProduct(this)" style="pointer-events: none; color: #A0A0A0; background-color: #E0E0E0; border: 1px solid #D0D0D0;">删除</button></td>
                     `;
                     table.appendChild(row);
 
@@ -225,10 +225,16 @@
             element.disabled = false;
         });
 
-        const formTdElements = document.querySelectorAll('#contractForm td.editable.quantity-input, #contractForm td.editable.unit-price-input');
-        formTdElements.forEach(element => {
+        const formTdInputElements = document.querySelectorAll('#contractForm td.editable.quantity-input, #contractForm td.editable.unit-price-input');
+        formTdInputElements.forEach(element => {
             element.setAttribute('contenteditable', 'true');  // 启用编辑
         });
+
+        const formTdDeleteElements = document.querySelectorAll('button[type="button"][onclick="removeProduct(this)"]');
+        formTdDeleteElements.forEach(element => {
+            element.style = "";
+        })
+
 
         searchCustomer();
         searchSalesman();
@@ -394,7 +400,7 @@
                 table.innerHTML = '';
                 if (data.elementList && data.elementList.length > 0) {
                     data.elementList.forEach(customer => {
-                        console.log(customer)
+                        // console.log(customer)
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>\${customer.customerID}</td>
@@ -698,7 +704,7 @@
             document.getElementById("emptyMessage").style.display = "none";
         }
 
-        console.log("productTableBody.children.length = " + productTableBody.children.length);
+        // console.log("productTableBody.children.length = " + productTableBody.children.length);
     }
 
     document.addEventListener("DOMContentLoaded", () => {

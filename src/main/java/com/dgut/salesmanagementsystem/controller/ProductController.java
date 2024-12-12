@@ -52,6 +52,6 @@ public class ProductController extends HttpServlet {
         String jsonResult = mapper.writeValueAsString(result);
         resp.getWriter().write(jsonResult);
 
-        System.out.println(jsonResult);
+//        System.out.println(jsonResult);
     }
 }

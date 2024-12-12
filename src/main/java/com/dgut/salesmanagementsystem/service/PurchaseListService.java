@@ -1,15 +1,15 @@
 package com.dgut.salesmanagementsystem.service;
 
+import com.dgut.salesmanagementsystem.model.ContractDAO;
 import com.dgut.salesmanagementsystem.model.PurchaseListDAO;
-import com.dgut.salesmanagementsystem.pojo.PaginatedResult;
-import com.dgut.salesmanagementsystem.pojo.Product;
-import com.dgut.salesmanagementsystem.pojo.PurchaseList;
-import com.dgut.salesmanagementsystem.pojo.RemainingProduct;
+import com.dgut.salesmanagementsystem.pojo.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class PurchaseListService {
     private final PurchaseListDAO purchaseListDAO = new PurchaseListDAO();
+    private final ContractDAO contractDAO = new ContractDAO();
     public List<PurchaseList> getPurchaseListsByContractID(int contractID, int pageNum, int pageSize) {
         return purchaseListDAO.getPurchaseListsByContractID(contractID, pageNum, pageSize);
     }
@@ -38,5 +38,30 @@ public class PurchaseListService {
         result.setTotalRecords(totalRecords);
 
         return result;
+    }
+
+    public void addPurchaseList(int contractID, List<PurchaseListItem> purchaseListItems) {
+        PurchaseList purchaseList = new PurchaseList();
+
+        // 计算总价
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        for(PurchaseListItem purchaseListItem : purchaseListItems) {
+            totalPrice = totalPrice.add(purchaseListItem.getUnitPrice().multiply(BigDecimal.valueOf(purchaseListItem.getQuantity())));
+        }
+        purchaseList.setContractID(contractID);
+        purchaseList.setPurchaseListItems(purchaseListItems);
+        purchaseList.setTotalPrice(totalPrice);
+
+        purchaseListDAO.addPurchaseList(purchaseList);
+    }
+
+    public void payForPurchaseList(int purchaseListID) {
+        // 修改状态
+        purchaseListDAO.editPaymentStatus(purchaseListID);
+
+        PurchaseList purchaseList = purchaseListDAO.getPurchaseListByID(purchaseListID);
+
+        // 修改合同已付款金额 同时修改合同状态，如果合同是为开始状态则变成履行中状态
+        contractDAO.updatePaidAmount(purchaseList.getContractID(), purchaseList.getTotalPrice());
     }
 }

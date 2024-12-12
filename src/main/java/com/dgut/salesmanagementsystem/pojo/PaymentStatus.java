@@ -14,4 +14,25 @@ public enum PaymentStatus {
         return value;
     }
 
+    public static String getChineseStr(String value)
+    {
+        if ("Pending".equals(value)) {
+            return "待付款";
+        } else if ("Paid".equals(value)) {
+            return "已付款";
+        }
+
+        throw new IllegalArgumentException("Invalid value string: " + value);
+    }
+
+    public static int getInt(String value) {
+        if ("Pending".equals(value)) {
+            return 1;
+        } else if ("Paid".equals(value)) {
+            return 2;
+        }
+
+        throw new IllegalArgumentException("Invalid value string: " + value);
+    }
+
 }

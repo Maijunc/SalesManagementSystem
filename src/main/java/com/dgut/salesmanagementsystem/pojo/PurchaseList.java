@@ -2,6 +2,7 @@ package com.dgut.salesmanagementsystem.pojo;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 // 采购清单
 public class PurchaseList {
@@ -10,6 +11,7 @@ public class PurchaseList {
     private BigDecimal totalPrice;  // 总价格
     private String paymentStatus; // 付款状态
     private Date createDate;     // 生成日期
+    private List<PurchaseListItem> purchaseListItems;
 
     public int getPurchaseListID() {
         return purchaseListID;
@@ -49,5 +51,13 @@ public class PurchaseList {
 
     public void setCreateDate(Date createDate) {
         this.createDate = createDate;
+    }
+
+    public List<PurchaseListItem> getPurchaseListItems() {
+        return purchaseListItems;
+    }
+
+    public void setPurchaseListItems(List<PurchaseListItem> purchaseListItems) {
+        this.purchaseListItems = purchaseListItems;
     }
 }

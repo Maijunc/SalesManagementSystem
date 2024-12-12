@@ -15,6 +15,9 @@
 <form action="../PurchaseListController" method="post" onsubmit="return validateForm()">
     <input type="hidden" name="action" value="add">
 
+    <!-- 隐藏字段，用于提交合同ID -->
+    <input type="hidden" id="contractID" name="contractID">
+
     <!-- 商品列表 -->
     <h3>商品列表</h3>
     <button type="button" onclick="openProductModal()">选择商品</button>
@@ -111,8 +114,8 @@
                         <td>\${product.productName}</td>
                         <td>\${product.stockQuantity}</td>
                         <td id="remaining-\${product.productID}">\${product.remainingQuantity}</td>
-                        <td><input type="number" min="1" max="\${product.remainingQuantity}" value="1" id="quantity-\${product.productID}" oninput="validateQuantity(this)" </td>
-                        <td>\${product.unitPrice}<input type="number" min="0" step="0.01" value="\${product.unitPrice}" id="unitPrice-\${product.productID}" style="display: none"</td>
+                        <td><input type="number" min="1" max="\${product.remainingQuantity}" value="1" id="quantity-\${product.productID}" oninput="validateQuantity(this)"></td>
+                        <td>\${product.unitPrice}<input type="number" min="0" step="0.01" value="\${product.unitPrice}" id="unitPrice-\${product.productID}" style="display: none"></td>
                         <td><button onclick="selectProduct('\${product.productID}', '\${product.productName}')">选择</button></td>
                     `;
                         table.appendChild(row);
@@ -141,7 +144,7 @@
         const unitPrice = parseFloat(unitPriceInput.value);
 
         if (isNaN(quantity) || quantity <= 0 || quantity > maxQuantity) {
-            alert('\`请输入有效的数量（1-\${maxQuantity}\`');
+            alert('\`请输入有效的数量（1-' + maxQuantity + '\`');
             return;
         }
 
@@ -169,7 +172,9 @@
 
             // 更新剩余数量
             productData[productID].remainingQuantity -= quantity;
-            document.getElementById(`remaining-\${productID}`).textContent = productData[productID].remainingQuantity;
+            document.getElementById('remaining-' + productID).textContent = productData[productID].remainingQuantity;
+            document.getElementById('quantity-' + productID).max = parseInt(productData[productID].remainingQuantity);
+
             // document.getElementById('quantity-\${productID}').max = parseInt(productData[productID].remainingQuantity);
 
         }
@@ -277,8 +282,9 @@
 
         // 恢复剩余数量
         productData[productID].remainingQuantity += quantity;
-        document.getElementById(`remaining-\${productID}`).textContent = productData[productID].remainingQuantity;
-        // document.getElementById('quantity-\${productID}').max = parseInt(productData[productID].remainingQuantity);
+        console.log(productID);
+        document.getElementById('remaining-' + productID).textContent = productData[productID].remainingQuantity;
+        document.getElementById('quantity-' + productID).max = parseInt(productData[productID].remainingQuantity);
         row.parentElement.removeChild(row);
     }
 
@@ -287,6 +293,20 @@
         if (confirm("确认要清空所有商品吗？")) {
             // 获取表格体并清空内容
             const productTableBody = document.getElementById("productTable").querySelector("tbody");
+
+            // 遍历所有商品行
+            Array.from(productTableBody.rows).forEach(row => {
+                const productID = row.dataset.productID; // 从行数据中获取 productID
+                const quantity = parseInt(row.cells[2].textContent, 10); // 获取当前数量
+
+                // 恢复剩余数量
+                if (productData[productID]) {
+                    productData[productID].remainingQuantity += quantity;
+                    document.getElementById('remaining-' + productID).textContent = productData[productID].remainingQuantity;
+                    document.getElementById('quantity-' + productID).max = parseInt(productData[productID].remainingQuantity);
+                }
+            });
+
             productTableBody.innerHTML = '';
             updateProductListSummary();
         }
@@ -364,6 +384,7 @@
     /* 页面加载的时候就加载一次 */
     window.onload=function(){
         searchProduct();
+        document.getElementById('contractID').value = <%=request.getParameter("contractID")%>;
     }
 
 </script>

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="com.dgut.salesmanagementsystem.pojo.PurchaseList" %>
+<%@ page import="com.dgut.salesmanagementsystem.pojo.PaymentStatus" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,7 +52,7 @@
             <td><%= (currentPage - 1) * pageSize + cnt %></td>
             <td><%= purchaseList.getCreateDate() %></td>
             <td><%= purchaseList.getTotalPrice() %></td>
-            <td><%= purchaseList.getPaymentStatus() %></td>
+            <td><%= PaymentStatus.getChineseStr(purchaseList.getPaymentStatus()) %></td>
             <td colspan="2" class="action-buttons">
                 <a href="../PurchaseListController?action=details&purchaseListID=<%= purchaseList.getPurchaseListID() %>">详情</a>
                 <a href="../PurchaseListController?action=pay&purchaseListID=<%= purchaseList.getPurchaseListID() %>">付款</a>
@@ -78,5 +79,6 @@
                 <%= (currentPage == totalPages) ? "style='pointer-events: none; color: gray;'" : "" %>>下一页</a>
     </div>
 </main>
+
 </body>
 </html>

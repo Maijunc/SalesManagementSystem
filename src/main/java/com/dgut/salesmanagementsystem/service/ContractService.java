@@ -85,4 +85,8 @@ public class ContractService {
 
         return contractDetails;
     }
+
+    public String getContractName(int contractID) {
+        return contractDAO.getContractName(contractID);
+    }
 }

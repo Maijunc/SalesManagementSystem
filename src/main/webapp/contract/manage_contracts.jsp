@@ -116,7 +116,7 @@
 <%--            <td><%= contractStatus %></td>--%>
             <td class="action-buttons" style="text-align: center">
                 <a href="contract_view.jsp?contractID=<%= contract.getContractID() %>">查看</a>
-                <a href="../PurchaseListController?PageNum=1<%= "&contractID=" + contract.getContractID() %><%= "&contractName=" + contract.getContractName()%>"
+                <a href="../PurchaseListController?PageNum=1<%= "&contractID=" + contract.getContractID() %>"
                    class="purchaseList">采购清单</a>
             </td>
         </tr>

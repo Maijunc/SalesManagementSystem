@@ -3,6 +3,7 @@ package com.dgut.salesmanagementsystem.model;
 import com.dgut.salesmanagementsystem.pojo.*;
 import com.dgut.salesmanagementsystem.tool.DatabaseConnection;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -369,6 +370,33 @@ public class ContractDAO {
         return ret;
     }
 
+    public String getContractName(Integer contractID) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        String contractName = null;
+        ResultSet resultSet = null;
+        try {
+            // 获取数据库连接
+            connection = DatabaseConnection.getConnection();
+
+            String sql = "SELECT contract_name FROM Contract WHERE contract_id = ?";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, contractID);
+
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                contractName = resultSet.getString("contract_name");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭资源
+            closeResources(connection, preparedStatement, resultSet);
+        }
+
+        return contractName;
+    }
+
     private ContractItem mapResultSetToContractItem(ResultSet resultSet) throws Exception {
         ContractItem contractItem = new ContractItem();
 
@@ -401,6 +429,66 @@ public class ContractDAO {
         contract.setSalesmanID(resultSet.getInt("salesman_id"));
 
         return contract;
+    }
+
+    public void updatePaidAmount(int contractID, BigDecimal totalPrice) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        // 动态构建查询条件
+        List<Object> params = new ArrayList<>();  // 存储查询参数
+        try {
+            // 获取数据库连接
+            connection = DatabaseConnection.getConnection();
+            connection.setAutoCommit(false); // 开启事务
+
+            // 基本的查询语句，不包含条件部分
+            // 1.修改已支付金额
+            StringBuilder sqlBuilder = new StringBuilder("UPDATE Contract SET paid_amount = paid_amount + ? ");
+
+            String updatePayAmountSql = "UPDATE Contract " +
+                    "SET paid_amount = paid_amount + ?, " +
+                    "contract_status = ? " +
+                    "WHERE contract_id = ?;";
+            preparedStatement = connection.prepareStatement(updatePayAmountSql);
+
+            // 设置参数值
+            params.add(totalPrice);      // customer_name
+            params.add(ContractStatus.getInt(ContractStatus.IN_PROGRESS.getValue()));
+            params.add(contractID);     // contact_person
+
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
+
+            preparedStatement.executeUpdate();
+
+            // 清除参数list 用于下一个sql语句注入
+            params.clear();
+
+            // 2. 修改合同状态 如果是未开始则设置成进行中
+            String updateContractStatusSql = "UPDATE Contract SET contract_status = ? WHERE contract_id = ? AND contract_status = ?;";
+            preparedStatement = connection.prepareStatement(updateContractStatusSql);
+            // 设置参数值
+            params.add(ContractStatus.getInt(ContractStatus.IN_PROGRESS.getValue())); //进行中
+            params.add(contractID);     // contact_person
+            params.add(ContractStatus.getInt(ContractStatus.NOT_STARTED.getValue())); //未开始
+
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
+
+            // 提交事务
+            connection.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭资源
+            closeResources(connection, preparedStatement, null);
+        }
     }
 
     private void closeResources(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet) {
