@@ -89,6 +89,8 @@
         <button type="button" id="editButton" onclick="enableEdit()">编辑</button>
         <!-- 保存按钮 -->
         <button type="submit" id="saveButton" style="display: none;">保存</button>
+        <!-- 返回按钮 -->
+        <button type="button" onclick="back()" style="margin-top: 20px">返回</button>
     </form>
 </div>
 
@@ -821,6 +823,9 @@
         return true;
     }
 
+    function back() {
+        window.location.href = "../ContractController?pageNum=1";
+    }
 
     // 初始化合同数据
     window.onload = function() {

@@ -2,6 +2,8 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.dgut.salesmanagementsystem.pojo.PurchaseList" %>
 <%@ page import="com.dgut.salesmanagementsystem.pojo.PaymentStatus" %>
+<%@ page import="java.sql.Timestamp" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +13,7 @@
 </head>
 <body>
 <header class="page-header">
-    <a href="manage_contracts.jsp" class="back-link">返回</a> <!-- 返回按钮 -->
+    <a href="../ContractController?pageNum=1" class="back-link">返回</a> <!-- 返回按钮 -->
     <h1>采购清单管理 - 合同：<%= session.getAttribute("contractName") %></h1>
 </header>
 
@@ -37,6 +39,7 @@
         <tbody>
         <%
             List<PurchaseList> purchaseLists = (List<PurchaseList>) session.getAttribute("purchaseLists");
+
             Integer pageSizeObj = (Integer) session.getAttribute("pageSize");
             Integer currentPageObj = (Integer) session.getAttribute("currentPage");
             Integer totalPagesObj = (Integer) session.getAttribute("totalPages");
@@ -46,15 +49,18 @@
             int cnt = 0;
             if (purchaseLists != null && !purchaseLists.isEmpty()) {
                 for (PurchaseList purchaseList : purchaseLists) {
+                    Timestamp createDate = purchaseList.getCreateDate();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String formattedDate = sdf.format(createDate);
                     cnt++;
         %>
         <tr>
             <td><%= (currentPage - 1) * pageSize + cnt %></td>
-            <td><%= purchaseList.getCreateDate() %></td>
+            <td><%= formattedDate %></td>
             <td><%= purchaseList.getTotalPrice() %></td>
             <td><%= PaymentStatus.getChineseStr(purchaseList.getPaymentStatus()) %></td>
             <td colspan="2" class="action-buttons">
-                <a href="../PurchaseListController?action=details&purchaseListID=<%= purchaseList.getPurchaseListID() %>">详情</a>
+                <a href="purchaseList_view.jsp?purchaseListID=<%= purchaseList.getPurchaseListID() %>">详情</a>
                 <a href="../PurchaseListController?action=pay&purchaseListID=<%= purchaseList.getPurchaseListID() %>">付款</a>
                 <a href="../PurchaseListController?action=addShipOrder&purchaseListID=<%= purchaseList.getPurchaseListID() %>">生成发货单</a>
             </td>

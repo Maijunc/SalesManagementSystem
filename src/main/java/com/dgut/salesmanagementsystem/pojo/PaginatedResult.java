@@ -4,6 +4,7 @@ import java.util.List;
 
 public class PaginatedResult<T> {
     private List<T> elementList;
+    private T elementToPass;
     private Integer currentPage;
     private Integer totalPages;
     private Integer totalRecords;
@@ -38,6 +39,14 @@ public class PaginatedResult<T> {
 
     public void setTotalRecords(int totalRecords) {
         this.totalRecords = totalRecords;
+    }
+
+    public T getElementToPass() {
+        return elementToPass;
+    }
+
+    public void setElementToPass(T elementToPass) {
+        this.elementToPass = elementToPass;
     }
 }
 

@@ -182,8 +182,8 @@ public class PurchaseListDAO {
             connection = DatabaseConnection.getConnection();
 
             // 1. 插入合同表
-            String sql = "INSERT INTO PurchaseListItem (purchase_list_id, product_id, product_name, quantity) "
-                    + "VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO PurchaseListItem (purchase_list_id, product_id, product_name, quantity, unit_price) "
+                    + "VALUES (?, ?, ?, ?, ?)";
 
             preparedStatement = connection.prepareStatement(sql);
 
@@ -192,6 +192,7 @@ public class PurchaseListDAO {
                 preparedStatement.setInt(2, item.getProductID()); // 设置商品ID
                 preparedStatement.setString(3, item.getProductName()); // 设置商品名称
                 preparedStatement.setInt(4, item.getQuantity()); // 设置商品数量
+                preparedStatement.setBigDecimal(5, item.getUnitPrice());
 
                 // 执行插入操作
                 preparedStatement.addBatch();
@@ -203,28 +204,6 @@ public class PurchaseListDAO {
             closeResources(connection, preparedStatement, null);
         }
     }
-
-    private RemainingProduct mapResultSetToRemainingProduct(ResultSet resultSet) throws SQLException {
-        RemainingProduct remainingProduct = new RemainingProduct();
-        remainingProduct.setProductID(resultSet.getInt("product_id"));
-        remainingProduct.setProductName(resultSet.getString("product_name"));
-        remainingProduct.setStockQuantity(resultSet.getInt("stock_quantity"));
-        remainingProduct.setUnitPrice(resultSet.getBigDecimal("unit_price"));
-        remainingProduct.setRemainingQuantity(resultSet.getInt("remaining_quantity"));
-        return remainingProduct;
-    }
-
-
-    private PurchaseList mapResultSetToPurchaseList(ResultSet resultSet) throws Exception{
-        PurchaseList purchaseList = new PurchaseList();
-        purchaseList.setPurchaseListID(resultSet.getInt("purchase_list_id"));
-        purchaseList.setContractID(resultSet.getInt("contract_id"));
-        purchaseList.setTotalPrice(resultSet.getBigDecimal("total_price"));
-        purchaseList.setPaymentStatus(resultSet.getString("payment_status"));
-        purchaseList.setCreateDate(resultSet.getDate("create_date"));
-        return purchaseList;
-    }
-
 
     public void editPaymentStatus(int purchaseListID) {
         Connection connection = null;
@@ -258,6 +237,7 @@ public class PurchaseListDAO {
         }
     }
 
+    // 获取PurchaseList（数据库里面的，没有PurchaseListItem的）
     public PurchaseList getPurchaseListByID(int purchaseListID) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -282,6 +262,140 @@ public class PurchaseListDAO {
             closeResources(connection, preparedStatement, resultSet);
         }
 
+        return purchaseList;
+    }
+
+    public List<PurchaseListItem> getAllPurchaseListItemsByPurchaseListID(int purchaseListID) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        List<PurchaseListItem> purchaseListItems = new ArrayList<>();
+        ResultSet resultSet = null;
+        try {
+            // 获取数据库连接
+            connection = DatabaseConnection.getConnection();
+
+            String sql = "SELECT * FROM PurchaseListItem WHERE purchase_list_id = ?";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, purchaseListID);
+
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                PurchaseListItem purchaseListItem = mapResultSetToPurchaseListItem(resultSet);
+                purchaseListItems.add(purchaseListItem);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭资源
+            closeResources(connection, preparedStatement, resultSet);
+        }
+
+        return purchaseListItems;
+    }
+
+    public List<PurchaseListItem> getPurchaseListItemsByPage(Integer purchaseListID, int pageNum, int pageSize) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        List<PurchaseListItem> purchaseListItems = new ArrayList<>();
+        ResultSet resultSet = null;
+        try {
+            // 获取数据库连接
+            connection = DatabaseConnection.getConnection();
+
+            String sql = "SELECT * FROM PurchaseListItem WHERE purchase_list_id = ? LIMIT ? OFFSET ?";
+            preparedStatement = connection.prepareStatement(sql);
+
+            // 动态构建查询条件
+            List<Object> params = new ArrayList<>();  // 存储查询参数
+
+            params.add(purchaseListID);
+            params.add(pageSize);
+            params.add((pageNum - 1) * pageSize);
+
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
+
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                PurchaseListItem purchaseListItem = mapResultSetToPurchaseListItem(resultSet);
+                purchaseListItems.add(purchaseListItem);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭资源
+            closeResources(connection, preparedStatement, resultSet);
+        }
+
+        return purchaseListItems;
+    }
+
+    public int countPurchaseListItems(Integer purchaseListID) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        int totalRecords = 0;
+        try {
+            connection = DatabaseConnection.getConnection();
+            // 基本的查询语句，不包含条件部分
+            String sql = "SELECT COUNT(*) FROM PurchaseListItem WHERE purchase_list_id = ?";
+
+            // 动态构建查询条件
+            List<Object> params = new ArrayList<>();  // 存储查询参数
+
+            params.add(purchaseListID);
+
+            preparedStatement = connection.prepareStatement(sql);
+
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                totalRecords = resultSet.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connection, preparedStatement, resultSet);
+        }
+        return totalRecords;
+    }
+
+    private PurchaseListItem mapResultSetToPurchaseListItem(ResultSet resultSet) throws SQLException {
+        PurchaseListItem purchaseListItem = new PurchaseListItem();
+        purchaseListItem.setPurchaseListItemID(resultSet.getInt("purchase_list_item_id"));
+        purchaseListItem.setPurchaseListID(resultSet.getInt("purchase_list_id")); // 假设在ResultSet中有这个字段
+        purchaseListItem.setProductID(resultSet.getInt("product_id"));
+        purchaseListItem.setProductName(resultSet.getString("product_name"));
+        purchaseListItem.setQuantity(resultSet.getInt("quantity"));
+        purchaseListItem.setUnitPrice(resultSet.getBigDecimal("unit_price"));
+        return purchaseListItem;
+    }
+
+
+    private RemainingProduct mapResultSetToRemainingProduct(ResultSet resultSet) throws SQLException {
+        RemainingProduct remainingProduct = new RemainingProduct();
+        remainingProduct.setProductID(resultSet.getInt("product_id"));
+        remainingProduct.setProductName(resultSet.getString("product_name"));
+        remainingProduct.setStockQuantity(resultSet.getInt("stock_quantity"));
+        remainingProduct.setUnitPrice(resultSet.getBigDecimal("unit_price"));
+        remainingProduct.setRemainingQuantity(resultSet.getInt("remaining_quantity"));
+        return remainingProduct;
+    }
+
+
+    private PurchaseList mapResultSetToPurchaseList(ResultSet resultSet) throws Exception{
+        PurchaseList purchaseList = new PurchaseList();
+        purchaseList.setPurchaseListID(resultSet.getInt("purchase_list_id"));
+        purchaseList.setContractID(resultSet.getInt("contract_id"));
+        purchaseList.setTotalPrice(resultSet.getBigDecimal("total_price"));
+        purchaseList.setPaymentStatus(resultSet.getString("payment_status"));
+        // 使用 getTimestamp 获取 java.sql.Timestamp，然后转换为 LocalDateTime
+        purchaseList.setCreateDate(resultSet.getTimestamp("create_date"));
         return purchaseList;
     }
 

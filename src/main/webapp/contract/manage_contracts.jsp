@@ -139,20 +139,21 @@
             StringBuilder url = new StringBuilder("../ContractController?pageNum=");
             url.append(currentPage - 1);
 
-            if (session.getAttribute("contractName") != null) {
-                url.append("&contractName=").append(session.getAttribute("contractName"));
+            // 这些是筛选条件
+            if (session.getAttribute("contractNameFilter") != null) {
+                url.append("&contractName=").append(session.getAttribute("contractNameFilter"));
             }
-            if (session.getAttribute("contractID") != null) {
-                url.append("&contractID=").append(session.getAttribute("contractID"));
+            if (session.getAttribute("contractIDFilter") != null) {
+                url.append("&contractID=").append(session.getAttribute("contractIDFilter"));
             }
-            if (session.getAttribute("status") != null) {
-                url.append("&status=").append(session.getAttribute("status"));
+            if (session.getAttribute("statusFilter") != null) {
+                url.append("&status=").append(session.getAttribute("statusFilter"));
             }
-            if (session.getAttribute("start_time") != null) {
-                url.append("&start_time=").append(session.getAttribute("start_time"));
+            if (session.getAttribute("startTimeFilter") != null) {
+                url.append("&start_time=").append(session.getAttribute("startTimeFilter"));
             }
-            if (session.getAttribute("end_time") != null) {
-                url.append("&end_time=").append(session.getAttribute("end_time"));
+            if (session.getAttribute("endTimeFilter") != null) {
+                url.append("&end_time=").append(session.getAttribute("endTimeFilter"));
             }
 
             String urlString = url.toString();
@@ -163,20 +164,21 @@
             url = new StringBuilder("../ContractController?pageNum=");
             url.append(currentPage + 1);
 
-            if (session.getAttribute("contractName") != null) {
-                url.append("&contractName=").append(session.getAttribute("contractName"));
+            // 这些是筛选条件
+            if (session.getAttribute("contractNameFilter") != null) {
+                url.append("&contractName=").append(session.getAttribute("contractNameFilter"));
             }
-            if (session.getAttribute("contractID") != null) {
-                url.append("&contractID=").append(session.getAttribute("contractID"));
+            if (session.getAttribute("contractIDFilter") != null) {
+                url.append("&contractID=").append(session.getAttribute("contractIDFilter"));
             }
-            if (session.getAttribute("status") != null) {
-                url.append("&status=").append(session.getAttribute("status"));
+            if (session.getAttribute("statusFilter") != null) {
+                url.append("&status=").append(session.getAttribute("statusFilter"));
             }
-            if (session.getAttribute("start_time") != null) {
-                url.append("&start_time=").append(session.getAttribute("start_time"));
+            if (session.getAttribute("startTimeFilter") != null) {
+                url.append("&start_time=").append(session.getAttribute("startTimeFilter"));
             }
-            if (session.getAttribute("end_time") != null) {
-                url.append("&end_time=").append(session.getAttribute("end_time"));
+            if (session.getAttribute("endTimeFilter") != null) {
+                url.append("&end_time=").append(session.getAttribute("endTimeFilter"));
             }
 
             urlString = url.toString();

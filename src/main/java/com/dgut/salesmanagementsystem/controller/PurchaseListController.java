@@ -39,13 +39,12 @@ public class PurchaseListController extends HttpServlet {
             searchRemainingProductsForAjax(req, resp);
         } else if("pay".equals(action)) {
             payForPurchaseList(req, resp);
-        } else if("details".equals(action)) {
-
+        } else if("view".equals(action)) {
+            getPurchaseListDetailsByID(req, resp);
         }
         else
             getPurchaseListsByContractID(req, resp);
     }
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
@@ -101,8 +100,7 @@ public class PurchaseListController extends HttpServlet {
             }
         });
         purchaseListService.addPurchaseList(contractID, purchaseListItems);
-        String contractName = contractService.getContractName(contractID);
-        resp.sendRedirect("../PurchaseListController?PageNum=1&contractID=" + contractID + "&contractName=" + contractName);
+        resp.sendRedirect("../PurchaseListController?PageNum=1&contractID=" + contractID);
     }
 
     // 传入pageNum和contractID属性，需要contractID, contractName, purchaseLists, pageSize, currentPage 和 totalPages 传进session里面
@@ -170,12 +168,34 @@ public class PurchaseListController extends HttpServlet {
 
         // 传递一下contractName用于告诉用户这是哪个合同的采购清单
         HttpSession session = req.getSession();
-        String contractName = (String) session.getAttribute("contractName");
         int contractID = (int) session.getAttribute("contractID");
         int pageNum = (int) session.getAttribute("currentPage");
 
 
         purchaseListService.payForPurchaseList(purchaseListID);
         resp.sendRedirect("PurchaseListController?" + "contractID=" + contractID + "&pageNum=" + pageNum);
+    }
+
+    private void getPurchaseListDetailsByID(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        int pageNum = req.getParameter("pageNum") == null ? 1 : Integer.parseInt(req.getParameter("pageNum"));
+        String purchaseListIDStr = req.getParameter("purchaseListID");
+        Integer purchaseListID = 0;
+        if (purchaseListIDStr != null && !purchaseListIDStr.isEmpty()) {
+            try {
+                purchaseListID = Integer.parseInt(purchaseListIDStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("getPurchaseListDetailsByID: invalid purchaseListID");
+
+            return;
+        }
+        // 获取单页数据 获取PurchaseList的细节 也就是分页查询PurchaseItem
+        PaginatedResult<PurchaseList> result = purchaseListService.getPurchaseListDetails(purchaseListID, pageNum, pageSize);
+        // 返回的是合同的细节信息，以json串的形式
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonResult = mapper.writeValueAsString(result);
+        resp.getWriter().write(jsonResult);
     }
 }

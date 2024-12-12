@@ -1,6 +1,8 @@
 package com.dgut.salesmanagementsystem.pojo;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -10,7 +12,7 @@ public class PurchaseList {
     private int contractID;      // 合同ID，外键
     private BigDecimal totalPrice;  // 总价格
     private String paymentStatus; // 付款状态
-    private Date createDate;     // 生成日期
+    private Timestamp createDate;     // 生成日期
     private List<PurchaseListItem> purchaseListItems;
 
     public int getPurchaseListID() {
@@ -45,11 +47,11 @@ public class PurchaseList {
         this.paymentStatus = paymentStatus;
     }
 
-    public Date getCreateDate() {
+    public Timestamp getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(Timestamp createDate) {
         this.createDate = createDate;
     }
 

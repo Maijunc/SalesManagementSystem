@@ -66,18 +66,7 @@ public class ContractDAO {
 
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                Contract contract = new Contract();
-                contract.setContractID(resultSet.getInt("contract_id"));
-                contract.setContractName(resultSet.getString("contract_name"));
-                contract.setContractDate(resultSet.getDate("contract_date"));
-                contract.setStartDate(resultSet.getDate("start_date"));
-                contract.setEndDate(resultSet.getDate("end_date"));
-                contract.setContractStatus(ContractStatus.fromString(resultSet.getString("contract_status")));
-                contract.setTotalAmount(resultSet.getBigDecimal("total_amount"));
-                contract.setPaidAmount(resultSet.getBigDecimal("paid_amount"));
-                contract.setRemainingAmount(resultSet.getBigDecimal("remaining_amount"));
-                contract.setSalesmanID(resultSet.getInt("salesman_id"));
-                contract.setCustomerID(resultSet.getInt("customer_id"));
+                Contract contract = mapResultSetToContract(resultSet);
                 ret.add(contract);
             }
         } catch (Exception e) {

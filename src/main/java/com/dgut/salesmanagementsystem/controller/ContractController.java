@@ -45,6 +45,7 @@ public class ContractController extends HttpServlet{
     }
 
     private void searchContract(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        // 查询条件
         String contractName = req.getParameter("contractName");
         String contractIDStr = req.getParameter("contractID");
         String status = req.getParameter("status");
@@ -86,15 +87,15 @@ public class ContractController extends HttpServlet{
 
         // 设置分页相关属性
         if(contractName != null)
-            session.setAttribute("contractName", contractName);
+            session.setAttribute("contractNameFilter", contractName);
         if(contractIDStr != null)
-            session.setAttribute("contractID", contractIDStr);
+            session.setAttribute("contractIDFilter", contractIDStr);
         if(status != null)
-            session.setAttribute("status", status);
+            session.setAttribute("statusFilter", status);
         if(startTimeStr != null)
-            session.setAttribute("start_time", startTimeStr);
+            session.setAttribute("startTimeFilter", startTimeStr);
         if(endTimeStr != null)
-            session.setAttribute("end_time", endTimeStr);
+            session.setAttribute("endTimeFilter", endTimeStr);
 
 
         resp.sendRedirect("contract/manage_contracts.jsp");

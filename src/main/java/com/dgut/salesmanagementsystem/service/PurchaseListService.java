@@ -64,4 +64,22 @@ public class PurchaseListService {
         // 修改合同已付款金额 同时修改合同状态，如果合同是为开始状态则变成履行中状态
         contractDAO.updatePaidAmount(purchaseList.getContractID(), purchaseList.getTotalPrice());
     }
+
+    public PaginatedResult<PurchaseList> getPurchaseListDetails(Integer purchaseListID, int pageNum, int pageSize) {
+        PurchaseList purchaseList = purchaseListDAO.getPurchaseListByID(purchaseListID);
+        purchaseList.setPurchaseListItems(purchaseListDAO.getPurchaseListItemsByPage(purchaseListID, pageNum, pageSize));
+
+        int totalRecords = purchaseListDAO.countPurchaseListItems(purchaseListID);
+        // 算出总共有几页
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+        totalPages = totalPages > 0 ? totalPages : 1;
+        // 设置分页相关属性
+        PaginatedResult<PurchaseList> result = new PaginatedResult<>();
+        result.setElementToPass(purchaseList);
+        result.setCurrentPage(pageNum);
+        result.setTotalPages(totalPages);
+        result.setTotalRecords(totalRecords);
+
+        return result;
+    }
 }
