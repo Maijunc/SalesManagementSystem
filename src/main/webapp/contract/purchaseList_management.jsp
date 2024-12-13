@@ -61,8 +61,7 @@
             <td><%= PaymentStatus.getChineseStr(purchaseList.getPaymentStatus()) %></td>
             <td colspan="2" class="action-buttons">
                 <a href="purchaseList_view.jsp?purchaseListID=<%= purchaseList.getPurchaseListID() %>">详情</a>
-                <a href="../PurchaseListController?action=pay&purchaseListID=<%= purchaseList.getPurchaseListID() %>">付款</a>
-                <a href="../PurchaseListController?action=addShipOrder&purchaseListID=<%= purchaseList.getPurchaseListID() %>">生成发货单</a>
+                <a href="../PurchaseListController?action=pay&purchaseListID=<%= purchaseList.getPurchaseListID() %>" onclick='return confirm("确定要付款吗？");'>付款</a>
             </td>
         </tr>
         <%

@@ -365,6 +365,67 @@ public class PurchaseListDAO {
         return totalRecords;
     }
 
+    public ShipOrder getShipOrderInfo(Integer purchaseListItemID) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ShipOrder shipOrder = null;
+        ResultSet resultSet = null;
+        int totalRecords = 0;
+        try {
+            connection = DatabaseConnection.getConnection();
+            // 基本的查询语句，不包含条件部分
+            String sql = "SELECT "
+                    + "pli.product_name, "
+                    + "pli.product_id, "
+                    + "(pli.quantity * pli.unit_price) AS total_amount, "
+                    + "pl.purchase_list_id, "
+                    + "pli.quantity, "
+                    + "pli.unit_price, "
+                    + "c.customer_id, "
+                    + "c.customer_name "
+                    + "FROM "
+                    + "PurchaseListItem pli "
+                    + "JOIN PurchaseList pl ON pli.purchase_list_id = pl.purchase_list_id "
+                    + "JOIN Contract ct ON pl.contract_id = ct.contract_id "
+                    + "JOIN Customer c ON ct.customer_id = c.customer_id "
+                    + "WHERE "
+                    + "pli.purchase_list_item_id = ?;";
+
+            // 动态构建查询条件
+            List<Object> params = new ArrayList<>();  // 存储查询参数
+
+            params.add(purchaseListItemID);
+
+            preparedStatement = connection.prepareStatement(sql);
+
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                shipOrder = new ShipOrder();
+                shipOrder.setProductName(resultSet.getString("product_name"));
+                shipOrder.setProductID(resultSet.getInt("product_id"));
+                shipOrder.setTotalAmount(resultSet.getBigDecimal("total_amount"));
+                shipOrder.setPurchaseListID(resultSet.getInt("purchase_list_id"));
+                shipOrder.setQuantity(resultSet.getInt("quantity"));
+                shipOrder.setUnitPrice(resultSet.getBigDecimal("unit_price"));
+                shipOrder.setCustomerID(resultSet.getInt("customer_id"));
+                shipOrder.setCustomerName(resultSet.getString("customer_name"));
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connection, preparedStatement, resultSet);
+        }
+        return shipOrder;
+    }
+
     private PurchaseListItem mapResultSetToPurchaseListItem(ResultSet resultSet) throws SQLException {
         PurchaseListItem purchaseListItem = new PurchaseListItem();
         purchaseListItem.setPurchaseListItemID(resultSet.getInt("purchase_list_item_id"));

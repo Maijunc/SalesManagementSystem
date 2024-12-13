@@ -29,4 +29,13 @@ public enum ShipOrderStatus {
     public String getValue() {
         return value;
     }
+
+    public static ShipOrderStatus fromString(String status) {
+        for (ShipOrderStatus sos : ShipOrderStatus.values()) {
+            if (sos.getValue().equalsIgnoreCase(status)) {
+                return sos;
+            }
+        }
+        throw new IllegalArgumentException("Invalid status string: " + status);
+    }
 }

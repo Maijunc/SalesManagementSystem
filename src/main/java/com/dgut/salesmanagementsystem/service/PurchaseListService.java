@@ -82,4 +82,8 @@ public class PurchaseListService {
 
         return result;
     }
+
+    public ShipOrder getShipOrderInfo(Integer purchaseListItemID) {
+        return purchaseListDAO.getShipOrderInfo(purchaseListItemID);
+    }
 }

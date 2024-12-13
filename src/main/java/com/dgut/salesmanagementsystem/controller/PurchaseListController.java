@@ -41,10 +41,13 @@ public class PurchaseListController extends HttpServlet {
             payForPurchaseList(req, resp);
         } else if("view".equals(action)) {
             getPurchaseListDetailsByID(req, resp);
+        } else if("turnToNewShipOrder".equals(action)) {
+            turnToNewShipOrder(req, resp);
         }
         else
             getPurchaseListsByContractID(req, resp);
     }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
@@ -176,6 +179,37 @@ public class PurchaseListController extends HttpServlet {
         resp.sendRedirect("PurchaseListController?" + "contractID=" + contractID + "&pageNum=" + pageNum);
     }
 
+    private void turnToNewShipOrder(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        // 获取采购清单ID
+        String purchaseListIDItemStr = req.getParameter("purchaseListItemID");
+        Integer purchaseListItemID = 0;
+        if (purchaseListIDItemStr != null && !purchaseListIDItemStr.isEmpty()) {
+            try {
+                purchaseListItemID = Integer.parseInt(purchaseListIDItemStr);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("turnToNewShipOrder: invalid purchaseListItemID");
+            return;
+        }
+
+        ShipOrder shipOrder = purchaseListService.getShipOrderInfo(purchaseListItemID);
+
+        HttpSession session = req.getSession();
+        session.setAttribute("productName", shipOrder.getProductName());
+        session.setAttribute("productID", shipOrder.getProductID());
+        session.setAttribute("totalAmount", shipOrder.getTotalAmount());
+        session.setAttribute("purchaseListID", shipOrder.getPurchaseListID());
+        session.setAttribute("quantity", shipOrder.getQuantity());
+        session.setAttribute("unitPrice", shipOrder.getUnitPrice());
+        session.setAttribute("customerID", shipOrder.getCustomerID());
+        session.setAttribute("customerName", shipOrder.getCustomerName());
+        session.setAttribute("purchaseListItemID", purchaseListItemID);
+
+        resp.sendRedirect("contract/create_ship_order.jsp");
+    }
+
     private void getPurchaseListDetailsByID(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         int pageNum = req.getParameter("pageNum") == null ? 1 : Integer.parseInt(req.getParameter("pageNum"));
         String purchaseListIDStr = req.getParameter("purchaseListID");
@@ -197,5 +231,7 @@ public class PurchaseListController extends HttpServlet {
         ObjectMapper mapper = new ObjectMapper();
         String jsonResult = mapper.writeValueAsString(result);
         resp.getWriter().write(jsonResult);
+
+
     }
 }

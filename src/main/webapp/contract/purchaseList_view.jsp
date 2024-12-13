@@ -96,7 +96,7 @@
                             <td>\${product.quantity}</td>
                             <td>\${product.unitPrice}</td>
                             <td>
-                            <button class="btn-generate-ship-order" onclick="generateShipOrder('<%= request.getParameter("purchaseListID") %>')">生成发货单</button>
+                            <button class="btn-generate-ship-order" onclick="checkIfShipOrderExists('\${product.purchaseListItemID}')">生成发货单</button>
                             </td>
                         `;
                   productTable.appendChild(row);
@@ -192,12 +192,32 @@
             .catch(error => console.error('加载失败:', error));
   }
 
-  function generateShipOrder(purchaseListID) {
-    const confirmed = confirm("确定要生成发货单吗？");
-    if (confirmed) {
-      window.location.href = `../PurchaseListController?action=addShipOrder&purchaseListID=\${purchaseListID}`;
-    }
+  function generateShipOrder(purchaseListItemID) {
+      window.location.href = `../PurchaseListController?action=turnToNewShipOrder&purchaseListItemID=\${purchaseListItemID}`;
   }
+
+  function checkIfShipOrderExists(purchaseListItemID) {
+    fetch(`../ShipOrderController?action=checkExists&purchaseListItemID=\${purchaseListItemID}`)
+            .then(response => response.json())
+            .then(data => {
+              // 假设返回的数据格式如下
+              // data: { exists: true/false, message: "相关信息" }
+
+              if (data.exists) {
+                alert("该商品已有发货单，无法重复生成！");
+              } else {
+                // 如果没有发货单，继续调用生成发货单的函数
+                generateShipOrder(purchaseListItemID);
+              }
+            })
+            .catch(error => console.error("检查发货单失败:", error));
+  }
+
+  function generateShipOrder(purchaseListItemID) {
+    // 生成发货单的请求
+    window.location.href = `../PurchaseListController?action=turnToNewShipOrder&purchaseListItemID=\${purchaseListItemID}`;
+  }
+
 
 </script>
 
