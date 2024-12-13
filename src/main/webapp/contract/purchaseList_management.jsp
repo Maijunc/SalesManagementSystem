@@ -4,6 +4,14 @@
 <%@ page import="com.dgut.salesmanagementsystem.pojo.PaymentStatus" %>
 <%@ page import="java.sql.Timestamp" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="com.dgut.salesmanagementsystem.pojo.User" %>
+<%
+    User user = (User) session.getAttribute("user");
+    if (user == null || !"SalesManager".equals(user.getRole().getRole())) {
+        response.sendRedirect("../login.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,4 +1,12 @@
+<%@ page import="com.dgut.salesmanagementsystem.pojo.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    User user = (User) session.getAttribute("user");
+    if (user == null || !"SalesManager".equals(user.getRole().getRole())) {
+        response.sendRedirect("../login.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head>

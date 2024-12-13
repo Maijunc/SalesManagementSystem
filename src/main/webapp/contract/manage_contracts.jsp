@@ -6,7 +6,15 @@
 <%@ page import="com.dgut.salesmanagementsystem.pojo.ContractStatus" %>
 <%@ page import="com.dgut.salesmanagementsystem.controller.CustomerController" %>
 <%@ page import="com.dgut.salesmanagementsystem.controller.SalesmanController" %>
+<%@ page import="com.dgut.salesmanagementsystem.pojo.User" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+    User user = (User) session.getAttribute("user");
+    if (user == null || !"SalesManager".equals(user.getRole().getRole())) {
+        response.sendRedirect("../login.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head>

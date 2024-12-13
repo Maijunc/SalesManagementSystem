@@ -3,6 +3,14 @@
 <%@ page import="com.dgut.salesmanagementsystem.pojo.Salesman" %>
 <%@ page import="com.dgut.salesmanagementsystem.model.SalesmanDAO" %>
 <%@ page import="com.dgut.salesmanagementsystem.controller.SalesmanController" %>
+<%@ page import="com.dgut.salesmanagementsystem.pojo.User" %>
+<%
+    User user = (User) session.getAttribute("user");
+    if (user == null || !"SalesManager".equals(user.getRole().getRole())) {
+        response.sendRedirect("../login.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>

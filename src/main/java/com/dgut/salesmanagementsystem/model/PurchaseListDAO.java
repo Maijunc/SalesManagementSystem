@@ -80,26 +80,27 @@ public class PurchaseListDAO {
             // 动态构建查询条件
             List<Object> params = new ArrayList<>();  // 存储查询参数
 
-            System.out.println(searchKeyword);
+//            System.out.println(searchKeyword);
 
             // 构建 SQL 查询语句
-            String sql = "SELECT " +
-                    "    ContractItem.product_id AS product_id," +
-                    "    ContractItem.product_name AS product_name," +
-                    "    ContractItem.quantity - COALESCE(SUM(PurchaseListItem.quantity), 0) AS remaining_quantity," +
-                    "    ContractItem.unit_price AS unit_price," +
-                    "    Product.stock_quantity AS stock_quantity " +
-                    "FROM ContractItem " +
-                    "LEFT JOIN " +
-                    "    PurchaseListItem ON ContractItem.product_id = PurchaseListItem.product_id " +
-                    "LEFT JOIN " +
-                    "    PurchaseList ON PurchaseListItem.purchase_list_id = PurchaseList.purchase_list_id " +
-                    "LEFT JOIN " +
-                    "    Product ON Product.product_id  = ContractItem.product_id " +
-                    "WHERE " +
-                    "    ContractItem.contract_id = ? AND (ContractItem.product_name LIKE ? OR ContractItem.product_id = ?)" +
-                    "GROUP BY " +
-                    "    ContractItem.product_id, ContractItem.product_name, ContractItem.quantity, ContractItem.unit_price, Product.stock_quantity LIMIT ? OFFSET ?;";
+            String sql = "SELECT \n" +
+                    "    ci.product_id,\n" +
+                    "    ci.product_name,\n" +
+                    "    ci.quantity - COALESCE(SUM(pli.quantity), 0) AS remaining_quantity,\n" +
+                    "    ci.unit_price AS unit_price\n" +
+                    "FROM \n" +
+                    "    ContractItem ci\n" +
+                    "LEFT JOIN \n" +
+                    "    PurchaseList pl ON ci.contract_id = pl.contract_id\n" +
+                    "LEFT JOIN \n" +
+                    "    PurchaseListItem pli ON pl.purchase_list_id = pli.purchase_list_id AND ci.product_id = pli.product_id\n" +
+                    "WHERE ci.contract_id = ?\n" +
+                    "AND (ci.product_name LIKE ? OR ci.product_id = ?)\n" +
+                    "GROUP BY \n" +
+                    "    ci.contract_id, ci.product_id, ci.product_name, ci.quantity, ci.unit_price \n" +
+                    "HAVING \n" +
+                    "    ci.quantity - COALESCE(SUM(pli.quantity), 0) > 0\n" +
+                    "LIMIT ? OFFSET ?;";
             preparedStatement = connection.prepareStatement(sql);
 
             params.add(contractID);
@@ -124,6 +125,49 @@ public class PurchaseListDAO {
             closeResources(connection, preparedStatement, resultSet);
         }
         return ret;
+    }
+
+    public int countRemainingProducts(String searchKeyword, int contractID) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        int totalRecords = 0;
+        try {
+            connection = DatabaseConnection.getConnection();
+            // 基本的查询语句，不包含条件部分
+            String sql = "SELECT " +
+                    "    COUNT(*) " +
+                    "FROM ContractItem " +
+                    "LEFT JOIN " +
+                    "    PurchaseListItem ON ContractItem.product_id = PurchaseListItem.product_id " +
+                    "LEFT JOIN " +
+                    "    PurchaseList ON PurchaseListItem.purchase_list_id = PurchaseList.purchase_list_id " +
+                    "WHERE " +
+                    "    ContractItem.contract_id = ? AND (ContractItem.product_name LIKE ? OR ContractItem.product_id = ?);";
+
+            // 动态构建查询条件
+            List<Object> params = new ArrayList<>();  // 存储查询参数
+
+            params.add(contractID);
+            params.add("%" + searchKeyword + "%"); // 模糊查询
+            params.add(searchKeyword);
+
+            preparedStatement = connection.prepareStatement(sql);
+
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                totalRecords = resultSet.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connection, preparedStatement, resultSet);
+        }
+        return totalRecords;
     }
 
     public void addPurchaseList(PurchaseList purchaseList) {
@@ -442,7 +486,7 @@ public class PurchaseListDAO {
         RemainingProduct remainingProduct = new RemainingProduct();
         remainingProduct.setProductID(resultSet.getInt("product_id"));
         remainingProduct.setProductName(resultSet.getString("product_name"));
-        remainingProduct.setStockQuantity(resultSet.getInt("stock_quantity"));
+//        remainingProduct.setStockQuantity(resultSet.getInt("stock_quantity"));
         remainingProduct.setUnitPrice(resultSet.getBigDecimal("unit_price"));
         remainingProduct.setRemainingQuantity(resultSet.getInt("remaining_quantity"));
         return remainingProduct;

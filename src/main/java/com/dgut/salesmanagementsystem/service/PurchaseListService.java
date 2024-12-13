@@ -1,6 +1,7 @@
 package com.dgut.salesmanagementsystem.service;
 
 import com.dgut.salesmanagementsystem.model.ContractDAO;
+import com.dgut.salesmanagementsystem.model.ProductDAO;
 import com.dgut.salesmanagementsystem.model.PurchaseListDAO;
 import com.dgut.salesmanagementsystem.pojo.*;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 public class PurchaseListService {
     private final PurchaseListDAO purchaseListDAO = new PurchaseListDAO();
+    private final ProductDAO productDAO = new ProductDAO();
     private final ContractDAO contractDAO = new ContractDAO();
     public List<PurchaseList> getPurchaseListsByContractID(int contractID, int pageNum, int pageSize) {
         return purchaseListDAO.getPurchaseListsByContractID(contractID, pageNum, pageSize);
@@ -22,11 +24,15 @@ public class PurchaseListService {
     }
 
     public List<RemainingProduct> searchRemainingProducts(String searchKeyword, int pageNum, int pageSize, int contractID) {
-        return purchaseListDAO.searchRemainingProducts(searchKeyword, pageNum, pageSize, contractID);
+        List<RemainingProduct> remainingProductList = purchaseListDAO.searchRemainingProducts(searchKeyword, pageNum, pageSize, contractID);
+        for(RemainingProduct remainingProduct : remainingProductList) {
+            remainingProduct.setStockQuantity(productDAO.getStockQuantityByID(remainingProduct.getProductID()));
+        }
+        return remainingProductList;
     }
 
-    public PaginatedResult<RemainingProduct> getPaginatedResult(int curPage, int pageSize, List<RemainingProduct> remainingProductList, int contractID) {
-        int totalRecords = purchaseListDAO.countPurchaseLists(contractID);
+    public PaginatedResult<RemainingProduct> getPaginatedResult(String searchKeyword, int curPage, int pageSize, List<RemainingProduct> remainingProductList, int contractID) {
+        int totalRecords = purchaseListDAO.countRemainingProducts(searchKeyword, contractID);
         // 算出总共有几页
         int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
         totalPages = totalPages > 0 ? totalPages : 1;

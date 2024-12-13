@@ -75,6 +75,40 @@ public class ProductDAO {
         return ret;
     }
 
+    public int getStockQuantityByID(int productID) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        int ret = 0;
+        ResultSet resultSet = null;
+        try {
+            connection = DatabaseConnection.getConnection();
+
+            // 动态构建查询条件
+            List<Object> params = new ArrayList<>();  // 存储查询参数
+
+            // 构建 SQL 查询语句
+            String sql = "SELECT stock_quantity FROM Product WHERE product_id = ?";
+            preparedStatement = connection.prepareStatement(sql);
+
+            params.add(productID);
+
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
+
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                ret = resultSet.getInt("stock_quantity");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connection, preparedStatement, resultSet);
+        }
+        return ret;
+    }
+
     private void closeResources(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet) {
         try {
             if (resultSet != null) resultSet.close();

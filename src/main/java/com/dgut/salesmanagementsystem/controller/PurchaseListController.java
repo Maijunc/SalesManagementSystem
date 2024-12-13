@@ -149,7 +149,7 @@ public class PurchaseListController extends HttpServlet {
             return;
         }
         List<RemainingProduct> remainingProductList = purchaseListService.searchRemainingProducts(searchKeyword, pageNum, pageSize, contractID);
-        PaginatedResult<RemainingProduct> result = purchaseListService.getPaginatedResult(curPage, pageSize, remainingProductList, contractID);
+        PaginatedResult<RemainingProduct> result = purchaseListService.getPaginatedResult(searchKeyword, curPage, pageSize, remainingProductList, contractID);
 
         // 将结果转换为JSON返回给前端
         ObjectMapper mapper = new ObjectMapper();
