@@ -104,7 +104,7 @@
                             <td>\${product.quantity}</td>
                             <td>\${product.unitPrice}</td>
                             <td>
-                            <button class="btn-generate-ship-order" onclick="checkIfShipOrderExists('\${product.purchaseListItemID}')">生成发货单</button>
+                            <button class="btn-generate-ship-order" onclick="checkGenerateCondition('\${purchaseListID}', '\${product.purchaseListItemID}')">生成发货单</button>
                             </td>
                         `;
                   productTable.appendChild(row);
@@ -204,27 +204,67 @@
       window.location.href = `../PurchaseListController?action=turnToNewShipOrder&purchaseListItemID=\${purchaseListItemID}`;
   }
 
-  function checkIfShipOrderExists(purchaseListItemID) {
-    fetch(`../ShipOrderController?action=checkExists&purchaseListItemID=\${purchaseListItemID}`)
-            .then(response => response.json())
-            .then(data => {
-              // 假设返回的数据格式如下
-              // data: { exists: true/false, message: "相关信息" }
+  async function checkGenerateCondition(purchaseListID, purchaseListItemID) {
+    // 等待检查采购清单是否已付款
+    const isPaid = await checkIfPurchaseListPaid(purchaseListID);
+    if (!isPaid) {
+      console.log("checkIfPurchaseListPaid");
+      return;
+    }
 
-              if (data.exists) {
-                alert("该商品已有发货单，无法重复生成！");
-              } else {
-                // 如果没有发货单，继续调用生成发货单的函数
-                generateShipOrder(purchaseListItemID);
-              }
-            })
-            .catch(error => console.error("检查发货单失败:", error));
+    // 等待检查是否已经存在发货单
+    const isShipOrderExists = await checkIfShipOrderExists(purchaseListItemID);
+    if (isShipOrderExists) {
+      console.log("checkIfShipOrderExists");
+      return;
+    }
+
+    // 满足条件，生成发货单
+    console.log("generateShipOrder");
+    generateShipOrder(purchaseListItemID);
+  }
+
+  async function checkIfPurchaseListPaid(purchaseListID) {
+    try {
+      const response = await fetch(`../PurchaseListController?action=checkIfPaid&purchaseListID=\${purchaseListID}`);
+      const data = await response.json();
+
+      // 返回付款状态
+      if (!data.exists) {
+        alert("该采购清单还未付款，无法生成发货单！");
+        return false; // 未付款
+      } else {
+        return true; // 已付款
+      }
+    } catch (error) {
+      console.error("检查采购清单状态失败:", error);
+      return false; // 出错时返回 false
+    }
+  }
+
+  async function checkIfShipOrderExists(purchaseListItemID) {
+    try {
+      const response = await fetch(`../ShipOrderController?action=checkExists&purchaseListItemID=\${purchaseListItemID}`);
+      const data = await response.json();
+
+      // 如果已有发货单，返回 true，否则返回 false
+      if (data.exists) {
+        alert("该商品已有发货单，无法重复生成！");
+        return true; // 已存在发货单
+      } else {
+        return false; // 不存在发货单
+      }
+    } catch (error) {
+      console.error("检查发货单失败:", error);
+      return false; // 出错时返回 false
+    }
   }
 
   function generateShipOrder(purchaseListItemID) {
     // 生成发货单的请求
     window.location.href = `../PurchaseListController?action=turnToNewShipOrder&purchaseListItemID=\${purchaseListItemID}`;
   }
+
 
 
 </script>

@@ -1,6 +1,9 @@
 package com.dgut.salesmanagementsystem.controller;
 
+import com.dgut.salesmanagementsystem.pojo.PurchaseList;
 import com.dgut.salesmanagementsystem.pojo.ShipOrder;
+import com.dgut.salesmanagementsystem.pojo.ShipOrderStatus;
+import com.dgut.salesmanagementsystem.pojo.User;
 import com.dgut.salesmanagementsystem.service.ShipOrderService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,6 +15,8 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.List;
 
 @WebServlet("/ShipOrderController")
 public class ShipOrderController extends HttpServlet {
@@ -31,17 +36,62 @@ public class ShipOrderController extends HttpServlet {
 
         if("checkExists".equals(action)) {
             checkShipOrderExist(req, resp);
+        } else {
+            getShipOrderListByPage(req, resp);
         }
     }
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
 
         if ("create".equals(action)) {
             createShipOrder(req, resp);
+        } else if("updateLogistics".equals(action)) {
+            updateLogistics(req, resp);
         }
     }
+
+    private void updateLogistics(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // 获取请求参数
+        int shipOrderID = Integer.parseInt(request.getParameter("shipOrderID"));
+        String shippingCompany = request.getParameter("shippingCompany");
+        String trackingNumber = request.getParameter("trackingNumber");
+        String notes = request.getParameter("notes");
+
+        // 检查参数合法性
+        if (shippingCompany == null || shippingCompany.trim().isEmpty() ||
+                trackingNumber == null || trackingNumber.trim().isEmpty()) {
+            throw new IllegalArgumentException("物流公司和物流单号不能为空");
+        }
+
+        // 更新数据库中的发货单
+        ShipOrder shipOrder = shipOrderService.getShipOrderById(shipOrderID);
+        if (shipOrder == null) {
+            throw new IllegalArgumentException("找不到指定的发货单");
+        }
+
+        // 设置更新的值
+        shipOrder.setShippingCompany(shippingCompany);
+        shipOrder.setTrackingNumber(trackingNumber);
+        shipOrder.setNotes(notes);
+        shipOrder.setShipDate(new Timestamp(System.currentTimeMillis()));
+        shipOrder.setShipOrderStatus(ShipOrderStatus.SHIPPED);
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        shipOrder.setShippedBy(user.getUserName());
+
+        // 更新数据库
+        boolean success = shipOrderService.updateShipOrder(shipOrder);
+        if (!success) {
+            System.err.println("更新发货单失败");
+        }
+
+        // 更新成功，重定向到发货单详情页面
+        response.sendRedirect("ship_order/ship_order_view.jsp?shipOrderID=" + shipOrderID);
+    }
+
 
     private void createShipOrder(HttpServletRequest req, HttpServletResponse resp) throws IOException{
         // 从表单中获取参数
@@ -91,5 +141,22 @@ public class ShipOrderController extends HttpServlet {
         PrintWriter out = resp.getWriter();
         out.print("{\"exists\": " + exists + "}");
         out.flush();
+    }
+
+    private void getShipOrderListByPage(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        int pageNum = req.getParameter("pageNum") == null ? 1 : Integer.parseInt(req.getParameter("pageNum"));
+
+        List<ShipOrder> shipOrderList = shipOrderService.getShipOrderListByPage(pageNum, pageSize);
+        // 获取总页数
+        int totalPages = shipOrderService.getTotalPages(pageSize);
+        // 设置分页相关属性
+        HttpSession session = req.getSession();
+
+        session.setAttribute("shipOrderList", shipOrderList);
+        session.setAttribute("currentPage", pageNum);
+        session.setAttribute("totalPages", totalPages);
+        session.setAttribute("pageSize", pageSize);
+
+        resp.sendRedirect("ship_order/ship_order_list.jsp");
     }
 }

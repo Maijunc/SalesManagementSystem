@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +44,8 @@ public class PurchaseListController extends HttpServlet {
             getPurchaseListDetailsByID(req, resp);
         } else if("turnToNewShipOrder".equals(action)) {
             turnToNewShipOrder(req, resp);
+        } else if("checkIfPaid".equals(action)) {
+            checkIfPaid(req, resp);
         }
         else
             getPurchaseListsByContractID(req, resp);
@@ -54,6 +57,17 @@ public class PurchaseListController extends HttpServlet {
         if("add".equals(action)) {
             addPurchaseList(req, resp);
         }
+    }
+
+    private void checkIfPaid(HttpServletRequest req, HttpServletResponse resp) throws IOException{
+        int purchaseListID = Integer.parseInt(req.getParameter("purchaseListID"));
+        boolean exists = purchaseListService.checkIfPaid(purchaseListID);
+
+        // 发送JSON响应
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+        out.print("{\"exists\": " + exists + "}");
+        out.flush();
     }
 
     private void addPurchaseList(HttpServletRequest req, HttpServletResponse resp) throws IOException {

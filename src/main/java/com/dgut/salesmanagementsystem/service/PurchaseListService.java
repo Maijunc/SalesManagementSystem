@@ -92,4 +92,8 @@ public class PurchaseListService {
     public ShipOrder getShipOrderInfo(Integer purchaseListItemID) {
         return purchaseListDAO.getShipOrderInfo(purchaseListItemID);
     }
+
+    public boolean checkIfPaid(int purchaseListID) {
+        return purchaseListDAO.checkIfPaid(purchaseListID);
+    }
 }

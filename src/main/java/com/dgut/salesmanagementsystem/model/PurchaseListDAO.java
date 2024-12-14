@@ -138,10 +138,6 @@ public class PurchaseListDAO {
             String sql = "SELECT " +
                     "    COUNT(*) " +
                     "FROM ContractItem " +
-                    "LEFT JOIN " +
-                    "    PurchaseListItem ON ContractItem.product_id = PurchaseListItem.product_id " +
-                    "LEFT JOIN " +
-                    "    PurchaseList ON PurchaseListItem.purchase_list_id = PurchaseList.purchase_list_id " +
                     "WHERE " +
                     "    ContractItem.contract_id = ? AND (ContractItem.product_name LIKE ? OR ContractItem.product_id = ?);";
 
@@ -513,4 +509,40 @@ public class PurchaseListDAO {
             e.printStackTrace();
         }
     }
+
+    public boolean checkIfPaid(int purchaseListID) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        boolean isPaid = false;  // 默认未付款
+
+        try {
+            // 获取数据库连接
+            connection = DatabaseConnection.getConnection();
+
+            // 查询支付状态
+            String sql = "SELECT payment_status FROM PurchaseList WHERE purchase_list_id = ?";
+            preparedStatement = connection.prepareStatement(sql);
+
+            // 设置查询参数
+            preparedStatement.setInt(1, purchaseListID);
+
+            resultSet = preparedStatement.executeQuery();
+
+            // 判断支付状态
+            if (resultSet.next()) {
+                String paymentStatus = resultSet.getString("payment_status");
+                // 如果支付状态是"Paid"，返回true
+                isPaid = "Paid".equalsIgnoreCase(paymentStatus);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭资源
+            closeResources(connection, preparedStatement, resultSet);
+        }
+
+        return isPaid;
+    }
+
 }
