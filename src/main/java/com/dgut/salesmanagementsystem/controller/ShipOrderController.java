@@ -1,9 +1,8 @@
 package com.dgut.salesmanagementsystem.controller;
 
-import com.dgut.salesmanagementsystem.pojo.PurchaseList;
-import com.dgut.salesmanagementsystem.pojo.ShipOrder;
-import com.dgut.salesmanagementsystem.pojo.ShipOrderStatus;
-import com.dgut.salesmanagementsystem.pojo.User;
+import com.dgut.salesmanagementsystem.pojo.*;
+import com.dgut.salesmanagementsystem.service.ProductService;
+import com.dgut.salesmanagementsystem.service.PurchaseOrderService;
 import com.dgut.salesmanagementsystem.service.ShipOrderService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,6 +20,8 @@ import java.util.List;
 @WebServlet("/ShipOrderController")
 public class ShipOrderController extends HttpServlet {
     private ShipOrderService shipOrderService = new ShipOrderService();
+    private PurchaseOrderService purchaseOrderService = new PurchaseOrderService();
+    private ProductService productService = new ProductService();
     private int pageSize;
 
     @Override
@@ -51,12 +52,14 @@ public class ShipOrderController extends HttpServlet {
         }
     }
 
+    // 确认发货 此前已经检查过库存情况
     private void updateLogistics(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // 获取请求参数
         int shipOrderID = Integer.parseInt(request.getParameter("shipOrderID"));
         String shippingCompany = request.getParameter("shippingCompany");
         String trackingNumber = request.getParameter("trackingNumber");
         String notes = request.getParameter("notes");
+        String shippedBy = request.getParameter("shippedBy");
 
         // 检查参数合法性
         if (shippingCompany == null || shippingCompany.trim().isEmpty() ||
@@ -70,17 +73,34 @@ public class ShipOrderController extends HttpServlet {
             throw new IllegalArgumentException("找不到指定的发货单");
         }
 
+        // 获取商品信息
+        Product product = productService.getProductByID(shipOrder.getProductID());
+        if (product == null) {
+            throw new IllegalArgumentException("商品不存在");
+        }
+
+        int availableStock = product.getStockQuantity();
+        int requiredQuantity = shipOrder.getQuantity();
+
+        // 检查库存是否足够
+        if (availableStock < requiredQuantity) {
+            response.getWriter().write("<script>alert('库存不足，无法完成发货，请先补充库存！'); history.back();</script>");
+            return;
+        }
+
+        // 减少库存
+        boolean stockReduced = productService.reduceStock(product.getProductID(), requiredQuantity);
+        if (!stockReduced) {
+            throw new IllegalStateException("更新库存失败，发货未完成");
+        }
+
         // 设置更新的值
         shipOrder.setShippingCompany(shippingCompany);
         shipOrder.setTrackingNumber(trackingNumber);
         shipOrder.setNotes(notes);
         shipOrder.setShipDate(new Timestamp(System.currentTimeMillis()));
         shipOrder.setShipOrderStatus(ShipOrderStatus.SHIPPED);
-
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-
-        shipOrder.setShippedBy(user.getUserName());
+        shipOrder.setShippedBy(shippedBy);
 
         // 更新数据库
         boolean success = shipOrderService.updateShipOrder(shipOrder);
@@ -125,7 +145,28 @@ public class ShipOrderController extends HttpServlet {
         shipOrder.setRecipientName(recipientName);
         shipOrder.setRecipientPhone(recipientPhone);
         shipOrder.setShippingAddress(shippingAddress);
+        shipOrder.setShipOrderStatus(ShipOrderStatus.PENDING);
         shipOrder.setNotes(notes);
+
+        // 检查库存是否满足条件
+        Product product = productService.getProductByID(shipOrder.getProductID());
+        int availableStock = product.getStockQuantity();
+        int requiredQuantity = shipOrder.getQuantity();
+        int lowStockThreshold = product.getLowStockThreshold();
+
+        if (availableStock < requiredQuantity || (availableStock - requiredQuantity) < lowStockThreshold) {
+
+            // 检查是否已经生成过进货单
+            if (!shipOrder.isPurchaseOrderGenerated()) {
+                // 生成进货单
+                PurchaseOrderService purchaseOrderService = new PurchaseOrderService();
+                purchaseOrderService.checkAndCreatePurchaseOrder(shipOrder.getProductID(), requiredQuantity);
+
+                // 更新发货单的状态为已生成进货单
+                shipOrder.setPurchaseOrderGenerated(true);
+                shipOrderService.updateShipOrder(shipOrder);
+            }
+        }
 
         shipOrderService.createShipOrder(shipOrder);
 

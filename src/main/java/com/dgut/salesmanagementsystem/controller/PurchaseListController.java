@@ -117,7 +117,7 @@ public class PurchaseListController extends HttpServlet {
             }
         });
         purchaseListService.addPurchaseList(contractID, purchaseListItems);
-        resp.sendRedirect("../PurchaseListController?PageNum=1&contractID=" + contractID);
+        resp.sendRedirect("../PurchaseListController?pageNum=1&contractID=" + contractID);
     }
 
     // 传入pageNum和contractID属性，需要contractID, contractName, purchaseLists, pageSize, currentPage 和 totalPages 传进session里面

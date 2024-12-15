@@ -1,0 +1,134 @@
+/* 全局基础样式 */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* 页眉样式 */
+.page-header {
+    background-color: #4CAF50; /* 绿色 */
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #388E3C; /* 深绿色 */
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.page-header .back-link {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.page-header .back-link:hover {
+    text-decoration: underline;
+}
+
+/* 主体内容样式 */
+.main-content {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 20px auto;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* 表格样式 */
+.purchase-order-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.purchase-order-table th, .purchase-order-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.purchase-order-table th {
+    background-color: #4CAF50; /* 绿色 */
+    color: white;
+    font-weight: bold;
+}
+
+.purchase-order-table td {
+    word-break: break-word;
+}
+
+.purchase-order-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.purchase-order-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* 操作按钮样式 */
+.action-buttons a {
+    color: #4CAF50;
+    text-decoration: none;
+    padding: 5px 10px;
+    border: 1px solid #4CAF50;
+    border-radius: 3px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.action-buttons a:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* 分页样式 */
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.pagination a {
+    color: #4CAF50;
+    text-decoration: none;
+    padding: 5px 10px;
+    margin: 0 5px;
+    border: 1px solid #4CAF50;
+    border-radius: 3px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.pagination a[style*="pointer-events: none"] {
+    cursor: not-allowed;
+    color: gray !important;
+    border-color: gray !important;
+}
+
+/* 无数据提示 */
+.purchase-order-table td[colspan] {
+    text-align: center;
+    font-style: italic;
+    color: #999;
+}
+
+/* 错误提示信息 */
+.error-message {
+    color: #d9534f;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+}

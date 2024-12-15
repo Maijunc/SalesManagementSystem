@@ -128,4 +128,68 @@ public class ProductDAO {
 
         return product;
     }
+
+    public Product getProductByID(int productID) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        Product product = null;
+        ResultSet resultSet = null;
+        try {
+            connection = DatabaseConnection.getConnection();
+
+            // 动态构建查询条件
+            List<Object> params = new ArrayList<>();  // 存储查询参数
+
+            // 构建 SQL 查询语句
+            String sql = "SELECT * FROM Product WHERE product_id = ?";
+            preparedStatement = connection.prepareStatement(sql);
+
+            params.add(productID);
+
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
+
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                product = mapResultSetToProduct(resultSet);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connection, preparedStatement, resultSet);
+        }
+        return product;
+    }
+
+    public boolean updateStock(Integer productID, int newStock) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = DatabaseConnection.getConnection();
+
+            // 动态构建查询条件
+            List<Object> params = new ArrayList<>();  // 存储查询参数
+
+            // 构建 SQL 查询语句
+            String sql = "UPDATE Product SET stock_quantity = ? WHERE product_id = ?";
+            preparedStatement = connection.prepareStatement(sql);
+
+            params.add(newStock);
+            params.add(productID);
+
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
+
+            return preparedStatement.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connection, preparedStatement, null);
+        }
+        return false;
+    }
 }

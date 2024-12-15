@@ -13,8 +13,7 @@
     <title>销售人员 - 仪表盘</title>
 </head>
 <body>
-<%--<h1>欢迎, 销售人员 <%= user.getUsername() %></h1>--%>
-<h1>欢迎, 销售人员</h1>
+<h1>欢迎, 销售人员 <%= user.getUserName() %></h1>
 <nav>
     <a href="view_sales_performance.jsp">销售业绩</a>
     <a href="view_contracts.jsp">合同执行情况</a>

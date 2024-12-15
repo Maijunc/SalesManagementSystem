@@ -174,7 +174,7 @@ public class ShipOrderDAO {
             connection = DatabaseConnection.getConnection();
 
             String sql = "UPDATE ShipOrder SET shipping_company = ?, tracking_number = ?, notes = ?, " +
-                    "ship_date = ?, ship_order_status = ? WHERE ship_order_id = ?";
+                    "ship_date = ?, ship_order_status = ?, purchase_order_generated = ? WHERE ship_order_id = ?";
             preparedStatement = connection.prepareStatement(sql);
             // 设置参数值
 
@@ -183,7 +183,8 @@ public class ShipOrderDAO {
             params.add(shipOrder.getTrackingNumber());
             params.add(shipOrder.getNotes());
             params.add(shipOrder.getShipDate());
-            params.add(ShipOrderStatus.getInt(shipOrder.getShipOrderStatus().getValue()));           // address
+            params.add(ShipOrderStatus.getInt(shipOrder.getShipOrderStatus().getValue()));
+            params.add(shipOrder.isPurchaseOrderGenerated());
             params.add(shipOrder.getShipOrderID());
 
 
@@ -229,6 +230,7 @@ public class ShipOrderDAO {
         shipOrder.setTotalAmount(resultSet.getBigDecimal("total_amount"));
         shipOrder.setShippedBy(resultSet.getString("shipped_by"));
         shipOrder.setNotes(resultSet.getString("notes"));
+        shipOrder.setPurchaseOrderGenerated(resultSet.getBoolean("purchase_order_generated"));
         shipOrder.setCreatedAt(resultSet.getTimestamp("created_at"));
         shipOrder.setUpdatedAt(resultSet.getTimestamp("updated_at"));
 

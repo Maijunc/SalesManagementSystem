@@ -1,0 +1,156 @@
+/* 基础样式 */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* 页眉样式 */
+.page-header {
+    background-color: #4CAF50; /* 绿色 */
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #388E3C; /* 更深的绿色 */
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.page-header .back-link {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.page-header .back-link:hover {
+    text-decoration: underline;
+}
+
+/* 主内容区样式 */
+.main-content {
+    padding: 20px;
+    background-color: white;
+    margin: 20px auto;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+}
+
+/* 表单表格样式 */
+.purchase-order-details {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.purchase-order-details th, .purchase-order-details td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.purchase-order-details th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #4CAF50; /* 绿色 */
+}
+
+.purchase-order-details td {
+    font-size: 14px;
+    color: #555;
+}
+
+.purchase-order-details input[type="number"],
+.purchase-order-details input[type="text"],
+.purchase-order-details textarea,
+.purchase-order-details select {
+    width: calc(100% - 16px);
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+}
+
+.purchase-order-details textarea {
+    height: 80px;
+    resize: vertical;
+}
+
+/* 按钮和表单操作 */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.form-actions button {
+    background-color: #4CAF50; /* 绿色 */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: background-color 0.3s;
+}
+
+.form-actions button:hover {
+    background-color: #388E3C; /* 更深的绿色 */
+}
+
+.form-actions .cancel-button {
+    background-color: #f2f2f2;
+    color: #4CAF50; /* 绿色 */
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    text-decoration: none;
+    margin-left: 10px;
+    display: inline-block;
+    transition: background-color 0.3s;
+}
+
+.form-actions .cancel-button:hover {
+    background-color: #e6e6e6;
+}
+
+/* 禁用按钮样式 */
+button:disabled,
+.cancel-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .purchase-order-details {
+        width: 100%;
+    }
+
+    .main-content {
+        padding: 15px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .form-actions button,
+    .form-actions .cancel-button {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 10px;
+    }
+}

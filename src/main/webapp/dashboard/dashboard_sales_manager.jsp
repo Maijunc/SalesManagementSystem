@@ -13,8 +13,7 @@
   <title>销售管理员 - 仪表盘</title>
 </head>
 <body>
-<%--<h1>欢迎, 销售管理员 <%= user.getUsername() %></h1>--%>
-<h1>欢迎, 销售管理员</h1>
+<h1>欢迎, 销售管理员 <%= user.getUserName() %></h1>
 <nav>
   <a href="../CustomerController?pageNum=1&searchKeyword=">客户管理</a>
   <a href="../ContractController?pageNum=1">合同管理</a>

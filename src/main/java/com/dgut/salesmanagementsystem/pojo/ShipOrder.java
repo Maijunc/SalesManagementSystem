@@ -25,6 +25,7 @@ public class ShipOrder {
     private BigDecimal totalAmount; // 总金额
     private String shippedBy; //发货人
     private String notes; //备注
+    private boolean PurchaseOrderGenerated; // 是否已生成进货单
     private Timestamp createdAt; //创建时间
     private Timestamp updatedAt; //更新时间
 
@@ -196,4 +197,11 @@ public class ShipOrder {
         this.purchaseListItemID = purchaseListItemID;
     }
 
+    public boolean isPurchaseOrderGenerated() {
+        return PurchaseOrderGenerated;
+    }
+
+    public void setPurchaseOrderGenerated(boolean purchaseOrderGenerated) {
+        PurchaseOrderGenerated = purchaseOrderGenerated;
+    }
 }

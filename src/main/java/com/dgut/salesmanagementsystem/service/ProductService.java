@@ -29,4 +29,24 @@ public class ProductService {
 
         return result;
     }
+
+    public Product getProductByID(int productID)
+    {
+        return productDAO.getProductByID(productID);
+    }
+
+    public boolean reduceStock(Integer productID, int quantity) {
+        Product product = productDAO.getProductByID(productID);
+        if (product == null) {
+            throw new IllegalArgumentException("商品不存在");
+        }
+
+        int currentStock = product.getStockQuantity();
+        if (currentStock < quantity) {
+            return false; // 库存不足
+        }
+        // 更新库存
+        int newStock = currentStock - quantity;
+        return productDAO.updateStock(productID, newStock);
+    }
 }
