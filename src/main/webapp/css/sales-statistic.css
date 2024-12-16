@@ -1,0 +1,271 @@
+:root {
+    --primary-color: #0078d4;
+    --secondary-color: #f4f4f4;
+    --button-hover-bg: rgba(0, 123, 255, 0.7);
+    --modal-bg: rgba(0, 0, 0, 0.5);
+    --modal-header-bg: #0078d4;
+    --modal-header-color: white;
+    --modal-body-bg: #fff;
+    --modal-footer-bg: #f7f7f7;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+.contract-details {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px;
+}
+
+/*h2, h3, h4 {*/
+/*    color: #333;*/
+/*}*/
+
+form div {
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+input[type="date"], input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: var(--button-hover-bg);
+    filter: brightness(85%);
+}
+
+button:disabled {
+    background-color: #ccc;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-bg);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-dialog {
+    background-color: var(--modal-body-bg);
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    background-color: var(--modal-header-bg);
+    color: var(--modal-header-color);
+    padding: 15px;
+    text-align: center;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.close-button {
+    font-size: 30px;
+    color: var(--modal-header-color);
+    background: transparent;
+    border: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.search-bar input {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    flex: 1;
+}
+
+.modal-search-button {
+    padding: 8px 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 5px;
+    margin-left: 10px;
+}
+
+.modal-search-button:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.contract-details .table-container {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.contract-details table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.modal table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    display: table;
+    box-sizing: border-box;
+    text-indent: initial;
+    unicode-bidi: isolate;
+    border-spacing: 2px;
+    border-color: grey;
+}
+
+.modal table th, table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f8f8f8;
+}
+
+.modal-footer {
+    background-color: var(--modal-footer-bg);
+    padding: 10px;
+    text-align: right;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.close-modal-btn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.close-modal-btn:hover {
+    background-color: var(--button-hover-bg);
+}
+/* 分页控件样式 */
+.pagination {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.pagination a {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 0 5px;
+    text-decoration: none;
+    background-color: #f4f4f9;
+    border: 1px solid #ddd;
+    color: #0078d4;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #0078d4;
+    color: white;
+}
+
+.pagination a.active {
+    background-color: #005a9e;
+    color: white;
+    pointer-events: none;
+}
+
+.pagination a.disabled {
+    background-color: #ddd;
+    color: #bbb;
+    pointer-events: none;
+}
+
+.pagination input {
+    width: 50px;
+    padding: 4px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.pagination button {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    background-color: #0078d4;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.pagination button:hover {
+    background-color: #005a9e;
+}
+
+.back-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}

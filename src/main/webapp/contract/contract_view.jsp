@@ -1,10 +1,23 @@
 <%@ page import="com.dgut.salesmanagementsystem.pojo.User" %>
+<%@ page import="com.dgut.salesmanagementsystem.pojo.Salesman" %>
+<%@ page import="com.dgut.salesmanagementsystem.service.SalesmanService" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     User user = (User) session.getAttribute("user");
-    if (user == null || !"SalesManager".equals(user.getRole().getRole())) {
+    if (user == null || (!"SalesManager".equals(user.getRole().getRole()) && !"SalesMan".equals(user.getRole().getRole()))) {
         response.sendRedirect("../login.jsp");
         return;
+    }
+
+    // 判断角色是否为销售人员
+    boolean isSalesman = "SalesMan".equals(user.getRole().getRole());
+
+    int salesmanID = 0;
+    if(isSalesman) {
+        SalesmanService salesmanService = new SalesmanService();
+        Salesman salesman = salesmanService.getSalesmanByName(user.getUserName());
+
+        salesmanID = salesman.getSalesmanID();
     }
 %>
 <!DOCTYPE html>
@@ -50,9 +63,30 @@
             </select>
         </div>
 
+        <div>
+            <label for="totalAmount">合同总金额：</label>
+            <input type="text" id="totalAmount" name="totalAmount" readonly>
+        </div>
+        <div>
+            <label for="paidAmount">已付款金额：</label>
+            <input type="text" id="paidAmount" name="paidAmount" readonly>
+        </div>
+        <div>
+            <label for="remainingAmount">未付款金额：</label>
+            <input type="text" id="remainingAmount" name="remainingAmount" readonly>
+        </div>
+        <div>
+            <label for="paymentProgress">付款进度：</label>
+            <div class="progress-bar">
+                <div class="progress" id="paymentProgress" style="width: 0%;">0%</div>
+            </div>
+        </div>
+
+
+
         <!-- 客户选择 -->
         <div class="form-group">
-            <label for="salesmanInfo">客户:</label>
+            <label for="customerInfo">客户:</label>
             <input type="text" id="customerInfo" name="customerInfo" readonly disabled onclick="editCustomerInfo()"
                    placeholder="点击选择客户">
         </div>
@@ -88,6 +122,7 @@
         <!-- 空列表提示 -->
         <p id="emptyMessage" style="display: none; text-align: center; color: #777;">当前没有选择任何商品。</p>
 
+        <% if (!isSalesman) { %>
         <!-- 清空按钮 -->
         <div style="text-align: center; margin-top: 20px;">
             <button id="clearButton" type="button" onclick="clearAllProducts()" style="background-color: #ff4d4f; color: white; display: none">清空所有商品</button>
@@ -97,6 +132,7 @@
         <button type="button" id="editButton" onclick="enableEdit()">编辑</button>
         <!-- 保存按钮 -->
         <button type="submit" id="saveButton" style="display: none;">保存</button>
+        <% } %>
         <!-- 返回按钮 -->
         <button type="button" onclick="back()" style="margin-top: 20px">返回</button>
     </form>
@@ -191,6 +227,16 @@
                 document.getElementById('salesmanID').value = data.salesmanID;
                 document.getElementById('customerID').value = data.customerID;
                 document.getElementById('contractID').value = contractID;
+                document.getElementById('totalAmount').value = data.totalAmount;
+                document.getElementById('paidAmount').value = data.paidAmount;
+                document.getElementById('remainingAmount').value = data.remainingAmount;
+                // 计算付款进度
+                let progressPercentage = data.totalAmount > 0 ? (data.paidAmount * 100 / data.totalAmount) : 0;
+
+                // 更新进度条的宽度和文本
+                document.getElementById('paymentProgress').style.width = progressPercentage + '%';
+                document.getElementById('paymentProgress').textContent = progressPercentage.toFixed(2) + '%';
+
                 // 填充商品列表
                 if(data.contractStatusInt != 1) {
                     document.getElementById('editButton').setAttribute('style', 'color: #A0A0A0; background-color: #E0E0E0; border: 1px solid #D0D0D0;');
@@ -832,9 +878,14 @@
     }
 
     function back() {
-        window.location.href = "../ContractController?pageNum=1";
+        if (<%=isSalesman%>) {
+            // 如果是销售人员，跳转到特定的页面
+            window.location.href = "../ContractController?pageNum=1&action=salesman&salesmanID=<%=salesmanID%>";
+        } else {
+            // 否则跳转到默认页面
+            window.location.href = "../ContractController?pageNum=1";
+        }
     }
-
     // 初始化合同数据
     window.onload = function() {
         var contractID = <%= request.getParameter("contractID") %>; // 直接将 contractID 插入到 JavaScript 变量中

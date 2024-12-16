@@ -24,7 +24,7 @@
   <form method="POST" action="../SalesmanController" class="form-container">
     <input type="hidden" name="action" value="add">
     <div class="form-group">
-      <label for="name">销售人员姓名:</label>
+      <label for="name">销售人员昵称:</label>
       <input type="text" id="name" name="name" required>
     </div>
 
@@ -39,9 +39,9 @@
     <input type="hidden" id="email" name="email">
     <input type="hidden" id="phone" name="phone">
 
-    <div class="form-group">
+    <div class="form-group" hidden>
       <label for="totalSales">总销售额:</label>
-      <input type="number" step="0.01" id="totalSales" name="totalSales" required>
+      <input type="number" step="0.01" id="totalSales" name="totalSales" value="0.00">
     </div>
     <div class="form-group">
       <label for="commission">佣金:</label>

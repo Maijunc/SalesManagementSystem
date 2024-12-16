@@ -14,6 +14,9 @@ public class ContractDetails {
     private Integer salesmanID;
     private Integer customerID;
     private List<ContractItem> contractItemList;
+    private BigDecimal totalAmount;
+    private BigDecimal paidAmount;
+    private BigDecimal remainingAmount;
 
     public String getContractName() {
         return contractName;
@@ -85,5 +88,29 @@ public class ContractDetails {
 
     public void setCustomerID(Integer customerID) {
         this.customerID = customerID;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public BigDecimal getPaidAmount() {
+        return paidAmount;
+    }
+
+    public void setPaidAmount(BigDecimal paidAmount) {
+        this.paidAmount = paidAmount;
+    }
+
+    public BigDecimal getRemainingAmount() {
+        return remainingAmount;
+    }
+
+    public void setRemainingAmount(BigDecimal remainingAmount) {
+        this.remainingAmount = remainingAmount;
     }
 }

@@ -2,10 +2,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
   User user = (User) session.getAttribute("user");
-  if (user == null || !"SalesManager".equals(user.getRole().getRole())) {
+  if (user == null || (!"SalesManager".equals(user.getRole().getRole()) && !"SalesMan".equals(user.getRole().getRole()))) {
     response.sendRedirect("../login.jsp");
     return;
   }
+
+  // 判断角色是否为销售人员
+  boolean isSalesman = "SalesMan".equals(user.getRole().getRole());
 %>
 <!DOCTYPE html>
 <html>
@@ -52,7 +55,9 @@
       <th>商品名称</th>
       <th>数量</th>
       <th>单价</th>
+      <% if (!isSalesman) { %>
       <th>操作</th>
+      <% } %>
     </tr>
     </thead>
     <tbody>
@@ -66,6 +71,11 @@
 <script>
   // 页面加载时自动加载采购清单信息
   window.onload = function () {
+    var userRole = '<%= user.getRole().getRole() %>'; // 获取当前用户角色
+    if (userRole === "SalesMan") {
+      // 如果是销售人员，动态修改主色调
+      document.documentElement.style.setProperty('--primary-color', '#FF9800');
+    }
     const purchaseListID = <%=request.getParameter("purchaseListID")%>;
     fetch(`../PurchaseListController?action=view&purchaseListID=\${purchaseListID}`)
             .then(response => response.json())
@@ -98,14 +108,17 @@
               if (data.elementToPass.purchaseListItems && data.elementToPass.purchaseListItems.length > 0) {
                 data.elementToPass.purchaseListItems.forEach(product => {
                   const row = document.createElement('tr');
+
                   row.innerHTML = `
                             <td>\${product.productID}</td>
                             <td>\${product.productName}</td>
                             <td>\${product.quantity}</td>
                             <td>\${product.unitPrice}</td>
+                            <% if (!isSalesman) { %>
                             <td>
                             <button class="btn-generate-ship-order" onclick="checkGenerateCondition('\${purchaseListID}', '\${product.purchaseListItemID}')">生成发货单</button>
                             </td>
+                            <% } %>
                         `;
                   productTable.appendChild(row);
                 });
@@ -181,9 +194,11 @@
                             <td>\${product.productName}</td>
                             <td>\${product.quantity}</td>
                             <td>\${product.unitPrice}</td>
+                            <% if (!isSalesman) { %>
                             <td>
                               <button class="btn-generate-ship-order" onclick="generateShipOrder('<%= request.getParameter("purchaseListID") %>')">生成发货单</button>
                             </td>
+                            <% } %>
                             `;
                   productTable.appendChild(row);
                 });
@@ -264,8 +279,6 @@
     // 生成发货单的请求
     window.location.href = `../PurchaseListController?action=turnToNewShipOrder&purchaseListItemID=\${purchaseListItemID}`;
   }
-
-
 
 </script>
 

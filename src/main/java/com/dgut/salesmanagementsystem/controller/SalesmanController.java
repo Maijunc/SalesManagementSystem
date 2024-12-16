@@ -1,13 +1,12 @@
 package com.dgut.salesmanagementsystem.controller;
 
-import com.dgut.salesmanagementsystem.pojo.Customer;
 import com.dgut.salesmanagementsystem.pojo.PaginatedResult;
+import com.dgut.salesmanagementsystem.pojo.Role;
 import com.dgut.salesmanagementsystem.pojo.Salesman;
-import com.dgut.salesmanagementsystem.service.CustomerService;
 import com.dgut.salesmanagementsystem.service.SalesmanService;
+import com.dgut.salesmanagementsystem.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import jakarta.servlet.ServletContext;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,13 +15,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.List;
 
 @WebServlet(value = "/SalesmanController")
 public class SalesmanController extends HttpServlet {
-    private final SalesmanService salesService = new SalesmanService();
+    private final SalesmanService salesmanService = new SalesmanService();
+    private final UserService userService = new UserService();
     private int pageSize;
 
     @Override
@@ -51,9 +50,26 @@ public class SalesmanController extends HttpServlet {
             deleteSalesman(request, response);
         } else if("ajax".equals(action)){
             searchSalesmanForAjax(request, response);
-        } else {
+        } else if("salesPerformance".equals(action)) {
+            getSalesPerformance(request, response);
+        }else {
             searchSalesman(request, response);
         }
+    }
+
+    private void getSalesPerformance(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
+        int salesmanID = Integer.parseInt(request.getParameter("salesmanID"));
+        String startTimeStr = request.getParameter("startDate");
+        String endTimeStr = request.getParameter("endDate");
+
+        BigDecimal salesAmount = salesmanService.getSalesAmountBySalesmanAndDateRange(salesmanID, startTimeStr, endTimeStr);
+
+        // 将销售额传递到JSP
+        String salesAmountStr = null;
+        if(salesAmount != null)
+            salesAmountStr = salesAmount.toString();
+
+        response.sendRedirect("salesman/sales_performance.jsp?salesAmount=" + salesAmountStr);
     }
 
     public void searchSalesmanForAjax(HttpServletRequest request, HttpServletResponse response) throws IOException
@@ -65,8 +81,8 @@ public class SalesmanController extends HttpServlet {
             searchKeyword = "";
         int pageNum = request.getParameter("pageNum") == null ? 1 : Integer.parseInt(request.getParameter("pageNum"));
 
-        List<Salesman> salesmanList = salesService.searchSalesmen(searchKeyword, pageNum, pageSize);
-        PaginatedResult<Salesman> result = salesService.getSalesmenByPage(searchKeyword, curPage, pageSize, salesmanList);
+        List<Salesman> salesmanList = salesmanService.searchSalesmen(searchKeyword, pageNum, pageSize);
+        PaginatedResult<Salesman> result = salesmanService.getSalesmenByPage(searchKeyword, curPage, pageSize, salesmanList);
 //        response.setContentType("application/json;charset=UTF-8");
 //
 //        try (PrintWriter out = response.getWriter()) {
@@ -87,9 +103,9 @@ public class SalesmanController extends HttpServlet {
             searchKeyword = "";
         int pageNum = request.getParameter("pageNum") == null ? 1 : Integer.parseInt(request.getParameter("pageNum"));
 
-        List<Salesman> salesmanList = salesService.searchSalesmen(searchKeyword, pageNum, pageSize);
+        List<Salesman> salesmanList = salesmanService.searchSalesmen(searchKeyword, pageNum, pageSize);
         // 获取总页数
-        int totalPages = salesService.getTotalPages(searchKeyword, pageSize);
+        int totalPages = salesmanService.getTotalPages(searchKeyword, pageSize);
         // 设置分页相关属性
         HttpSession session = request.getSession();
         session.setAttribute("salesmanList", salesmanList);
@@ -107,7 +123,12 @@ public class SalesmanController extends HttpServlet {
         BigDecimal totalSales = new BigDecimal(request.getParameter("totalSales"));
         BigDecimal commission = new BigDecimal(request.getParameter("commission"));
 
-        salesService.addSalesman(name, email, phone, totalSales, commission);
+        String defaultPassword = "123456";
+        // 添加一个名字为xxx的user
+        userService.addUser(name, defaultPassword, Role.SALES_MAN);
+
+        salesmanService.addSalesman(name, email, phone, totalSales, commission);
+
         response.sendRedirect("SalesmanController?pageNum=1");
     }
 
@@ -119,7 +140,7 @@ public class SalesmanController extends HttpServlet {
         BigDecimal totalSales = new BigDecimal(request.getParameter("totalSales"));
         BigDecimal commission = new BigDecimal(request.getParameter("commission"));
 
-        salesService.updateSalesman(salesmanID, name, email, phone, totalSales, commission);
+        salesmanService.updateSalesman(salesmanID, name, email, phone, totalSales, commission);
         int pageNum = request.getParameter("pageNum") == null ? 1 : Integer.parseInt(request.getParameter("pageNum"));
         String searchKeyword = request.getParameter("searchKeyword");
         response.sendRedirect("SalesmanController?pageNum=" + pageNum + "&searchKeyword=" + searchKeyword);
@@ -127,19 +148,19 @@ public class SalesmanController extends HttpServlet {
 
     private void deleteSalesman(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int salesmanID = Integer.parseInt(request.getParameter("salesmanID"));
-        salesService.deleteSalesman(salesmanID);
+        salesmanService.deleteSalesman(salesmanID);
         response.sendRedirect("salesman/salesman_management.jsp");
     }
 
     public Salesman getSalesmanById(int salesmanID) {
-        return salesService.getSalesmanById(salesmanID);
+        return salesmanService.getSalesmanById(salesmanID);
     }
 
     private List<Salesman> getAllSalesmen() {
-        return salesService.getAllSalesmen();
+        return salesmanService.getAllSalesmen();
     }
 
     public List<Salesman> getPageSalesmen(String searchKeyword, int pageNum){
-        return salesService.searchSalesmen(searchKeyword, pageNum, pageSize);
+        return salesmanService.searchSalesmen(searchKeyword, pageNum, pageSize);
     }
 }

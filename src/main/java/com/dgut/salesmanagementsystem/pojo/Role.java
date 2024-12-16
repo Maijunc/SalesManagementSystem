@@ -10,6 +10,18 @@ public enum Role {
         this.role = role;
     }
 
+    public static int getInt(String value) {
+        if ("SalesManager".equals(value)) {
+            return 1;
+        } else if ("WarehouseManager".equals(value)) {
+            return 2;
+        } else if ("SalesMan".equals(value)) {
+            return 3;
+        }
+
+        throw new IllegalArgumentException("Invalid value string: " + value);
+    }
+
     public String getRole() {
         return role;
     }

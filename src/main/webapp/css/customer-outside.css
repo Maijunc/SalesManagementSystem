@@ -133,3 +133,54 @@ button.delete:hover {
     border-color: grey;
     cursor: not-allowed;
 }
+
+.navbar {
+    background-color: #0078D4;
+}
+.navbar a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    font-size: 18px;
+}
+.navbar a:hover {
+    text-decoration: underline;
+}
+.nav-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.nav-item {
+    list-style: none;
+    margin: 0 10px;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* 返回按钮样式 */
+.return-btn {
+    background-color: #0078d4; /* 按钮的背景色 */
+    color: white; /* 按钮文字颜色 */
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none; /* 去除链接下划线 */
+    font-size: 1em;
+    display: inline-block;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.return-btn:hover {
+    background-color: #005a9e; /* 悬浮时背景色 */
+    transform: scale(1.05); /* 悬浮时放大效果 */
+}
+
+.return-btn:active {
+    background-color: #003f73; /* 按钮点击时背景色 */
+    transform: scale(0.98); /* 按钮点击时稍微缩小 */
+}

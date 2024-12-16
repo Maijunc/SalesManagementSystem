@@ -7,10 +7,11 @@
 <%@ page import="com.dgut.salesmanagementsystem.controller.CustomerController" %>
 <%@ page import="com.dgut.salesmanagementsystem.controller.SalesmanController" %>
 <%@ page import="com.dgut.salesmanagementsystem.pojo.User" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     User user = (User) session.getAttribute("user");
-    if (user == null || !"SalesManager".equals(user.getRole().getRole())) {
+    if (user == null || !"SalesManager".equals(user.getRole().getRole())){
         response.sendRedirect("../login.jsp");
         return;
     }
@@ -98,6 +99,8 @@
             int cnt = 0;
             if (contractList != null && !contractList.isEmpty()) {
                 for (Contract contract : contractList) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String startTime = contract.getStartDate() != null ? sdf.format(contract.getStartDate()) : "未开始";
                     cnt++;
                     String contractStatus = "";
                     try {
@@ -112,7 +115,7 @@
             <td><%= contract.getContractID() %></td>
             <td><%= customerController.getCustomerById(contract.getCustomerID()).getCustomerName() %></td>
             <td><%= salesmanController.getSalesmanById(contract.getSalesmanID()).getName()%></td>
-            <td><%= contract.getStartDate() %></td>
+            <td><%= startTime %></td>
             <td class="status-tag">
             <% if("未开始".equals(contractStatus))
                     out.print("<div class=\"status-tag-blue\">" + contractStatus + "</div>");

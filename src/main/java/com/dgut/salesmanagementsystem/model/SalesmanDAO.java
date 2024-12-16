@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.*;
 
 public class SalesmanDAO {
@@ -215,5 +216,70 @@ public class SalesmanDAO {
             closeResources(connection, preparedStatement, resultSet);
         }
         return totalRecords;
+    }
+
+    public Salesman getSalesmanByName(String name) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        Salesman salesman = null;
+        try {
+            connection = DatabaseConnection.getConnection();
+            String sql = "SELECT * FROM Salesman WHERE name = ?";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, name);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                salesman = mapResultSetToSalesman(resultSet);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connection, preparedStatement, resultSet);
+        }
+        return salesman;
+    }
+
+    // 获取指定时间段内销售人员的销售额
+    public BigDecimal getSalesAmountBySalesmanAndDateRange(int salesmanID, String startTimeStr, String endTimeStr) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        try {
+            connection = DatabaseConnection.getConnection();
+            StringBuilder sqlBuilder = new StringBuilder("SELECT SUM(total_amount) AS total_amount FROM Contract WHERE salesman_id = ? AND contract_status = 'completed'");
+
+            // 动态构建查询条件
+            List<Object> params = new ArrayList<>();  // 存储查询参数
+            params.add(salesmanID);
+
+            // 如果 startDateStr 和 endDateStr 不为空，则添加相关条件
+            // 如果 startDateStr 和 endDateStr 不为空，则添加相关条件
+            if (startTimeStr != null && !startTimeStr.isEmpty() && endTimeStr != null && !endTimeStr.isEmpty()) {
+                sqlBuilder.append(" AND end_date BETWEEN ? AND ?");
+                params.add(startTimeStr);
+                params.add(endTimeStr);
+            }
+            // 构建最终的 SQL 查询语句
+            String sql = sqlBuilder.toString();
+
+            preparedStatement = connection.prepareStatement(sql);
+
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
+
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                totalAmount = resultSet.getBigDecimal("total_amount");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connection, preparedStatement, resultSet);
+        }
+        return totalAmount;
     }
 }

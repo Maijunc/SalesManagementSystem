@@ -22,6 +22,8 @@
 <body>
 <header>
   <h1>客户管理系统</h1>
+  <!-- 返回按钮 -->
+  <a href="../dashboard/dashboard_sales_manager.jsp" class="return-btn">返回</a>
 </header>
 <main>
   <!-- 查询客户 -->
@@ -65,10 +67,10 @@
       <td><%= customer.getAddress() %></td>
       <td>
         <a href="edit_customer.jsp?customerID=<%= customer.getCustomerID() %>&pageNum=<%= currentPage%>
-        &searchKeyword=<%= session.getAttribute("searchKeyword") %>>">修改</a>
-        |
-        <a href="../CustomerController?action=delete&customerID=<%= customer.getCustomerID() %>"
-           class="delete" onclick="return confirm('确认删除该客户吗？')">删除</a>
+        &searchKeyword=<%= session.getAttribute("searchKeyword") %>">修改</a>
+<%--        |--%>
+<%--        <a href="../CustomerController?action=delete&customerID=<%= customer.getCustomerID() %>"--%>
+<%--           class="delete" onclick="return confirm('确认删除该客户吗？')">删除</a>--%>
       </td>
     </tr>
     <%

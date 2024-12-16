@@ -269,4 +269,59 @@ public class ShipOrderDAO {
         }
         return totalRecords;
     }
+
+    public int getShippedQuantityByContractAndProduct(int contractID, int productID) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        int shippedQuantity = 0;
+
+        try {
+            connection = DatabaseConnection.getConnection();
+            // 动态构建查询条件
+            List<Object> params = new ArrayList<>();  // 存储查询参数
+
+            String sql = "SELECT \n" +
+                    "    ci.product_id,\n" +
+                    "    ci.product_name,\n" +
+                    "    c.contract_id,\n" +
+                    "    c.contract_name,\n" +
+                    "    SUM(so.quantity) AS total_shipped_quantity\n" +
+                    "FROM \n" +
+                    "    ShipOrder so\n" +
+                    "INNER JOIN PurchaseListItem pli ON so.purchase_list_item_id = pli.purchase_list_item_id\n" +
+                    "INNER JOIN PurchaseList pl ON pli.purchase_list_id = pl.purchase_list_id\n" +
+                    "INNER JOIN Contract c ON pl.contract_id = c.contract_id\n" +
+                    "INNER JOIN ContractItem ci ON c.contract_id = ci.contract_id AND so.product_id = ci.product_id\n" +
+                    "WHERE c.contract_id = ? AND ci.product_id = ?\n" +
+                    "GROUP BY \n" +
+                    "    ci.product_id, \n" +
+                    "    ci.product_name, \n" +
+                    "    c.contract_id, \n" +
+                    "    c.contract_name;";
+            preparedStatement = connection.prepareStatement(sql);
+
+            // 设置参数值
+            params.add(contractID);
+            params.add(productID);
+
+            // 设置查询参数
+            for (int i = 0; i < params.size(); i++) {
+                preparedStatement.setObject(i + 1, params.get(i));  // 使用 setObject 来动态设置参数
+            }
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                shippedQuantity = resultSet.getInt("total_shipped_quantity");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(connection, preparedStatement, resultSet);
+        }
+
+        return shippedQuantity;
+    }
 }

@@ -1,6 +1,7 @@
 package com.dgut.salesmanagementsystem.pojo;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -12,9 +13,9 @@ public class Contract {
     */
     private Integer contractID;  // 合同ID
     private String contractName; // 合同名称
-    private Date contractDate;   // 合同签订日期
-    private Date startDate;      // 合同开始日期
-    private Date endDate;        // 合同结束日期
+    private Timestamp contractDate;   // 合同签订日期
+    private Timestamp startDate;      // 合同开始日期
+    private Timestamp endDate;        // 合同结束日期
     private ContractStatus contractStatus; // 合同状态
     private BigDecimal totalAmount; // 合同总金额
     private BigDecimal paidAmount;  // 已付款金额
@@ -31,27 +32,27 @@ public class Contract {
         this.contractID = contractID;
     }
 
-    public Date getContractDate() {
+    public Timestamp getContractDate() {
         return contractDate;
     }
 
-    public void setContractDate(Date contractDate) {
+    public void setContractDate(Timestamp contractDate) {
         this.contractDate = contractDate;
     }
 
-    public Date getStartDate() {
+    public Timestamp getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(Timestamp startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public Timestamp getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(Timestamp endDate) {
         this.endDate = endDate;
     }
 

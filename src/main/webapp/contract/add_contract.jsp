@@ -24,17 +24,17 @@
         <label for="contractName">合同名称：</label>
         <input type="text" id="contractName" name="contractName" required>
     </div>
-    <div>
+    <div hidden>
         <label for="startDate">合同开始日期：</label>
-        <input type="date" id="startDate" name="startDate" required>
+        <input type="date" id="startDate" name="startDate" >
     </div>
-    <div>
+    <div hidden>
         <label for="endDate">合同结束日期：</label>
-        <input type="date" id="endDate" name="endDate" required>
+        <input type="date" id="endDate" name="endDate" >
     </div>
-    <div>
+    <div >
         <label for="contractStatus">合同状态：</label>
-        <select id="contractStatus" name="contractStatus" required>
+        <select id="contractStatus" name="contractStatus" disabled>
             <option value="1">未开始</option>
             <option value="2">进行中</option>
             <option value="3">已完成</option>
@@ -661,13 +661,13 @@
         }
 
         // 验证合同开始日期和结束日期
-        const startDate = new Date(document.getElementById("startDate").value);
-        const endDate = new Date(document.getElementById("endDate").value);
-
-        if (startDate > endDate) {
-            alert("合同开始日期不能晚于结束日期！");
-            return false; // 阻止表单提交
-        }
+        // const startDate = new Date(document.getElementById("startDate").value);
+        // const endDate = new Date(document.getElementById("endDate").value);
+        //
+        // if (startDate > endDate) {
+        //     alert("合同开始日期不能晚于结束日期！");
+        //     return false; // 阻止表单提交
+        // }
 
         // 验证合同状态
         const contractStatus = document.getElementById("contractStatus");

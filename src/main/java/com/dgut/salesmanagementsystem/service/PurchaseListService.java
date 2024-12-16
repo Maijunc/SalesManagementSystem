@@ -3,6 +3,7 @@ package com.dgut.salesmanagementsystem.service;
 import com.dgut.salesmanagementsystem.model.ContractDAO;
 import com.dgut.salesmanagementsystem.model.ProductDAO;
 import com.dgut.salesmanagementsystem.model.PurchaseListDAO;
+import com.dgut.salesmanagementsystem.model.ShipOrderDAO;
 import com.dgut.salesmanagementsystem.pojo.*;
 
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ public class PurchaseListService {
     private final PurchaseListDAO purchaseListDAO = new PurchaseListDAO();
     private final ProductDAO productDAO = new ProductDAO();
     private final ContractDAO contractDAO = new ContractDAO();
+    private final ShipOrderDAO shipOrderDAO = new ShipOrderDAO();
     public List<PurchaseList> getPurchaseListsByContractID(int contractID, int pageNum, int pageSize) {
         return purchaseListDAO.getPurchaseListsByContractID(contractID, pageNum, pageSize);
     }
@@ -68,12 +70,17 @@ public class PurchaseListService {
         PurchaseList purchaseList = purchaseListDAO.getPurchaseListByID(purchaseListID);
 
         // 修改合同已付款金额 同时修改合同状态，如果合同是为开始状态则变成履行中状态
-        contractDAO.updatePaidAmount(purchaseList.getContractID(), purchaseList.getTotalPrice());
+        contractDAO.payForPurchaseList(purchaseList.getContractID(), purchaseList.getTotalPrice());
     }
 
     public PaginatedResult<PurchaseList> getPurchaseListDetails(Integer purchaseListID, int pageNum, int pageSize) {
         PurchaseList purchaseList = purchaseListDAO.getPurchaseListByID(purchaseListID);
         purchaseList.setPurchaseListItems(purchaseListDAO.getPurchaseListItemsByPage(purchaseListID, pageNum, pageSize));
+
+        for(PurchaseListItem purchaseListItem : purchaseList.getPurchaseListItems()) {
+            purchaseListItem.setPaid(purchaseListDAO.checkIfPaid(purchaseListID));
+            purchaseListItem.setShipOrderExists(shipOrderDAO.checkShipOrderExists (purchaseListItem.getPurchaseListItemID()) > 0);
+        }
 
         int totalRecords = purchaseListDAO.countPurchaseListItems(purchaseListID);
         // 算出总共有几页
@@ -95,5 +102,9 @@ public class PurchaseListService {
 
     public boolean checkIfPaid(int purchaseListID) {
         return purchaseListDAO.checkIfPaid(purchaseListID);
+    }
+
+    public PurchaseList getPurchaseListByID(int purchaseListID) {
+        return purchaseListDAO.getPurchaseListByID(purchaseListID);
     }
 }

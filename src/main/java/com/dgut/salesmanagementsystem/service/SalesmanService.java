@@ -131,4 +131,16 @@ public class SalesmanService {
 
         return result;
     }
+
+    public Salesman getSalesmanByName(String name) {
+        Salesman salesman = salesmanDAO.getSalesmanByName(name);
+        // 将json格式的字符串转成对象
+        salesman.setContactInfo(mapJsonToContactInfo(salesman.getContactInfoJson()));
+
+        return salesman;
+    }
+
+    public BigDecimal getSalesAmountBySalesmanAndDateRange(int salesmanID, String startTimeStr, String endTimeStr) {
+        return salesmanDAO.getSalesAmountBySalesmanAndDateRange(salesmanID, startTimeStr, endTimeStr);
+    }
 }

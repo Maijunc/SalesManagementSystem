@@ -15,14 +15,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>销售人员管理</title>
+    <title>销售人员管理 </title>
     <link rel="stylesheet" href="../css/customer-outside.css">
 </head>
 <body>
 <header>
     <h1>销售人员管理系统</h1>
+    <!-- 返回按钮 -->
+    <a href="../dashboard/dashboard_sales_manager.jsp" class="return-btn">返回</a>
 </header>
 <main>
+
     <form method="GET" action="../SalesmanController">
         <input type="text" name="searchKeyword" placeholder="请输入销售人员姓名或ID">
         <button type="submit">查询</button>
@@ -32,10 +35,10 @@
         <thead>
         <tr>
             <th>ID</th>
-            <th>姓名</th>
+            <th>昵称</th>
             <th>邮箱</th>
             <th>电话</th>
-            <th>总销售额</th>
+<%--            <th>总销售额</th>--%>
             <th>佣金</th>
             <th>操作</th>
         </tr>
@@ -57,14 +60,14 @@
             <td><%= salesman.getName() %></td>
             <td><%= salesman.getContactInfo() != null ? salesman.getContactInfo().getEmail() : "" %></td>
             <td><%= salesman.getContactInfo() != null ? salesman.getContactInfo().getPhone() : "" %></td>
-            <td><%= salesman.getTotalSales() %></td>
+<%--            <td><%= salesman.getTotalSales() %></td>--%>
             <td><%= salesman.getCommission() %></td>
             <td>
                 <a href="edit_salesman.jsp?salesmanID=<%= salesman.getSalesmanID() %>&pageNum=<%= currentPage%>
-        &searchKeyword=<%= session.getAttribute("searchKeyword") %>>">修改</a>
-                |
-                <a href="../SalesmanController?action=delete&salesmanID=<%= salesman.getSalesmanID() %>"
-                   onclick="return confirm('确认删除该销售人员吗？')">删除</a>
+        &searchKeyword=<%= session.getAttribute("searchKeyword") %>">修改</a>
+<%--                |--%>
+<%--                <a href="../SalesmanController?action=delete&salesmanID=<%= salesman.getSalesmanID() %>"--%>
+<%--                   onclick="return confirm('确认删除该销售人员吗？')">删除</a>--%>
             </td>
         </tr>
         <%
@@ -72,7 +75,7 @@
         } else {
         %>
         <tr>
-            <td colspan="7">暂无销售人员信息</td>
+            <td colspan="6">暂无销售人员信息</td>
         </tr>
         <%
             }

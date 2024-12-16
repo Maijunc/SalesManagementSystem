@@ -28,7 +28,7 @@ public class ProductController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
         if("ajax".equals(action)) {
-            searchProductForAjax(req, resp);
+            searchProductsForAjax(req, resp);
         }
     }
 
@@ -36,7 +36,7 @@ public class ProductController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         super.doPost(req, resp);
     }
-    private void searchProductForAjax(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void searchProductsForAjax(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String searchKeyword = req.getParameter("searchKeyword");
         String pageParam = req.getParameter("pageNum");
         int curPage = (pageParam != null) ? Integer.parseInt(pageParam) : 1;

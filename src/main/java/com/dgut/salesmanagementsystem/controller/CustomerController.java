@@ -101,7 +101,7 @@ public class CustomerController extends HttpServlet {
 
         customerService.addCustomer(customer);
 
-        resp.sendRedirect("CustomerController?pageNum=1");
+        resp.sendRedirect("../CustomerController?pageNum=1&searchKeyword=");
     }
 
     public void deleteCustomer(HttpServletRequest req, HttpServletResponse resp) throws IOException{
@@ -134,7 +134,7 @@ public class CustomerController extends HttpServlet {
             customer.setCustomerStatus(CustomerStatus.fromInt(Integer.parseInt(customerStatusStr)).getValue());
         customerService.updateCustomer(customer);
 
-        resp.sendRedirect("CustomerController?pageNum=" + pageNum + "&searchKeyword=" + searchKeyword);
+        resp.sendRedirect("../CustomerController?pageNum=" + pageNum + "&searchKeyword=" + searchKeyword);
     }
 
     public List<Customer> getPageCustomers(String searchKeyword, int pageNum){

@@ -32,10 +32,10 @@
     <input type="hidden" name="action" value="edit">
     <input type="hidden" name="pageNum" value=<%= request.getParameter("pageNum")%>>
     <input type="hidden" name="searchKeyword" value=<%= request.getParameter("searchKeyword")%>>
-    <input type="hidden" name="salesmanID" value="<%= salesman.getSalesmanID() %>">
+    <input type="hidden" name="salesmanID" value=<%= salesman.getSalesmanID() %>>
     <div class="form-group">
-      <label for="name">销售人员姓名:</label>
-      <input type="text" id="name" name="name" value="<%= salesman.getName() %>" required>
+      <label for="name">销售人员昵称:</label>
+      <input type="text" id="name" name="name" value="<%= salesman.getName() %>" readonly>
     </div>
     <!-- 合并邮箱和电话为一个字段 -->
     <div class="form-group">
@@ -47,9 +47,9 @@
     <!-- 隐藏字段，用于提交邮箱和电话 -->
     <input type="hidden" id="email" name="email" value="<%= salesman.getContactInfo() != null ? salesman.getContactInfo().getEmail() : ""%>">
     <input type="hidden" id="phone" name="phone" value="<%= salesman.getContactInfo() != null ? salesman.getContactInfo().getPhone() : ""%>">
-    <div class="form-group">
+    <div class="form-group" hidden>
       <label for="totalSales">总销售额:</label>
-      <input type="number" step="0.01" id="totalSales" name="totalSales" value="<%= salesman.getTotalSales() %>" required>
+      <input type="number" step="0.01" id="totalSales" name="totalSales" value="<%= salesman.getTotalSales() %>">
     </div>
     <div class="form-group">
       <label for="commission">佣金:</label>

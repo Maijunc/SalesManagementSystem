@@ -48,5 +48,6 @@ public class PaginatedResult<T> {
     public void setElementToPass(T elementToPass) {
         this.elementToPass = elementToPass;
     }
+
 }
 

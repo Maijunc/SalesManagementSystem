@@ -34,7 +34,7 @@
     <input type="hidden" name="action" value="edit">
     <input type="hidden" name="pageNum" value=<%= request.getParameter("pageNum")%>>
     <input type="hidden" name="searchKeyword" value=<%= request.getParameter("searchKeyword")%>>
-    <input type="hidden" name="customerID" value="<%= customer.getCustomerID() %>">
+    <input type="hidden" name="customerID" value=<%= customer.getCustomerID() %>>
     <div class="form-group">
       <label for="customerName">客户名称:</label>
       <input type="text" id="customerName" name="customerName" value="<%= customer.getCustomerName() %>" required>
@@ -69,7 +69,7 @@
     </div>
     <div class="form-group">
       <label for="customerType">客户类型：</label>
-      <select id="customerType" name="customerType" selectedIndex="">
+      <select id="customerType" name="customerType" >
         <option value="1" <%= CustomerType.getIndexByValue(customer.getCustomerType()) == 1 ? "selected" : "" %>>个人</option>
         <option value="2" <%= CustomerType.getIndexByValue(customer.getCustomerType()) == 2 ? "selected" : "" %>>企业</option>
       </select>

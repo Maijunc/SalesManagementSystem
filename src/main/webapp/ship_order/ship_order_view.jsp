@@ -65,7 +65,7 @@
 </head>
 <body>
 <header class="page-header">
-    <a href="ship_order_list.jsp?pageNum=1" class="back-link">返回</a>
+    <a href="../ShipOrderController?pageNum=1" class="back-link">返回</a>
     <h1>发货单详情</h1>
 </header>
 

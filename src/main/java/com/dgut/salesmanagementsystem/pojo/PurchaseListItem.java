@@ -9,6 +9,8 @@ public class PurchaseListItem {
     private String productName;     // 商品名称
     private int quantity;           // 购买的商品数量
     private BigDecimal unitPrice; //单价
+    private boolean isPaid;
+    private boolean isShipOrderExists;
 
     public int getPurchaseListItemID() {
         return purchaseListItemID;
@@ -56,6 +58,22 @@ public class PurchaseListItem {
 
     public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
+    }
+
+    public boolean isPaid() {
+        return isPaid;
+    }
+
+    public void setPaid(boolean paid) {
+        isPaid = paid;
+    }
+
+    public boolean isShipOrderExists() {
+        return isShipOrderExists;
+    }
+
+    public void setShipOrderExists(boolean shipOrderExists) {
+        isShipOrderExists = shipOrderExists;
     }
 }
 

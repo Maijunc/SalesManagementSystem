@@ -33,7 +33,7 @@
 </head>
 <body>
 <header class="page-header">
-  <a href="purchase_order_list.jsp" class="back-link">返回</a>
+  <a href="../PurchaseOrderController?pageNum=1" class="back-link">返回</a>
   <h1>进货单详情</h1>
 </header>
 

@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 
 public class DatabaseConnection {
     // JDBC连接字符串，用户和密码
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/SalesManagementSystemDB";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/SMSDB";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "123456";
 

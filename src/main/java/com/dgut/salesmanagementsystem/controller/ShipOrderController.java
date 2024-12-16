@@ -1,9 +1,7 @@
 package com.dgut.salesmanagementsystem.controller;
 
 import com.dgut.salesmanagementsystem.pojo.*;
-import com.dgut.salesmanagementsystem.service.ProductService;
-import com.dgut.salesmanagementsystem.service.PurchaseOrderService;
-import com.dgut.salesmanagementsystem.service.ShipOrderService;
+import com.dgut.salesmanagementsystem.service.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,13 +13,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @WebServlet("/ShipOrderController")
 public class ShipOrderController extends HttpServlet {
     private ShipOrderService shipOrderService = new ShipOrderService();
     private PurchaseOrderService purchaseOrderService = new PurchaseOrderService();
+    private PurchaseListService purchaseListService = new PurchaseListService();
     private ProductService productService = new ProductService();
+    private ContractService contractService = new ContractService();
     private int pageSize;
 
     @Override
@@ -102,10 +103,28 @@ public class ShipOrderController extends HttpServlet {
         shipOrder.setShipOrderStatus(ShipOrderStatus.SHIPPED);
         shipOrder.setShippedBy(shippedBy);
 
-        // 更新数据库
+        // 更新数据库中的发货单
         boolean success = shipOrderService.updateShipOrder(shipOrder);
         if (!success) {
             System.err.println("更新发货单失败");
+        }
+
+        // 更新合同履行状态
+        PurchaseList purchaseList = purchaseListService.getPurchaseListByID(shipOrder.getPurchaseListID());
+
+        Contract contract = contractService.getContractByID(purchaseList.getContractID());
+        if (contract != null) {
+            // 检查合同下所有商品的发货情况
+            boolean allShipped = contractService.checkIfAllItemsShipped(contract.getContractID());
+            // 如果商品都已发货完毕
+            if (allShipped && contract.getPaidAmount().compareTo(contract.getTotalAmount()) == 0) {
+                // 如果所有商品都已发货完毕，更新合同的履行状态为 "completed"
+                boolean contractUpdated = contractService.updateContractStatus(contract.getContractID(), ContractStatus.COMPLETED);
+                contractUpdated = contractUpdated & contractService.setEndDate(contract.getContractID(), LocalDateTime.now());
+                if (!contractUpdated) {
+                    System.err.println("更新合同履行状态失败");
+                }
+            }
         }
 
         // 更新成功，重定向到发货单详情页面

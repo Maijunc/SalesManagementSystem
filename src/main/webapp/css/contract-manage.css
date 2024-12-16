@@ -1,3 +1,7 @@
+:root {
+    --primary-color: #0078d4; /* 默认主色调 */
+}
+
 /* 通用样式 */
 body {
     font-family: 'Arial', sans-serif;
@@ -19,7 +23,7 @@ body {
 /* 标题样式 */
 h1 {
     text-align: center;
-    color: #0078d4;
+    color: var(--primary-color);
     margin-bottom: 20px;
     font-size: 2em;
 }
@@ -33,7 +37,7 @@ h1 {
 }
 
 .actions button {
-    background-color: #0078d4;
+    background-color: var(--primary-color); /* 使用主色调 */
     color: white;
     padding: 10px 15px;
     border: none;
@@ -44,7 +48,10 @@ h1 {
 }
 
 .actions button:hover {
-    background-color: #005a9e;
+    /*background-color: #005a9e;*/
+    background-color: var(--primary-color);
+    filter: brightness(85%);  /* 将亮度降低15% */
+
 }
 
 /* 搜索表单样式 */
@@ -89,7 +96,7 @@ h1 {
 
 
 form button {
-    background-color: #0078d4;
+    background-color: var(--primary-color);
     color: white;
     padding: 8px 12px;
     border: none;
@@ -100,7 +107,9 @@ form button {
 }
 
 form button:hover {
-    background-color: #005a9e;
+    /*background-color: #005a9e;*/
+    background-color: var(--primary-color);
+    filter: brightness(85%);  /* 将亮度降低15% */
 }
 
 /* 表格样式 */
@@ -120,7 +129,7 @@ table th, table td {
 }
 
 table th {
-    background-color: #0078d4;
+    background-color: var(--primary-color);
     color: white;
     font-weight: bold;
     text-align: center;
@@ -136,7 +145,7 @@ table tr:hover {
 
 .separator {
     font-size: 24px; /* 设置横线的大小 */
-    color: #0078d4; /* 横线颜色 */
+    color: var(--primary-color); /* 横线颜色 */
     margin: 0 10px; /* 设置横线的间距 */
     font-weight: bold; /* 设置加粗 */
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
@@ -226,7 +235,7 @@ table tr:hover {
 }
 
 .add-button button{
-    background-color: #0078d4;
+    background-color: var(--primary-color);
     color: white;
     padding: 8px 12px;
     border: none;
@@ -239,7 +248,8 @@ table tr:hover {
 }
 
 .add-button button:hover {
-    background-color: #005a9e;
+    background-color: var(--primary-color);
+    filter: brightness(85%);  /* 将亮度降低15% */
 }
 
 /* 分页样式 */
@@ -254,14 +264,14 @@ table tr:hover {
 .pagination a {
     text-decoration: none;
     padding: 8px 12px;
-    border: 1px solid #0078d4;
+    border: 1px solid var(--primary-color);
     border-radius: 4px;
-    color: #0078d4;
+    color: var(--primary-color);
     transition: all 0.3s;
 }
 
 .pagination a:hover {
-    background-color: #0078d4;
+    background-color: var(--primary-color);
     color: white;
 }
 

@@ -5,11 +5,22 @@
     <%@ page import="java.sql.Timestamp" %>
     <%@ page import="java.text.SimpleDateFormat" %>
     <%@ page import="com.dgut.salesmanagementsystem.pojo.User" %>
+    <%@ page import="com.dgut.salesmanagementsystem.pojo.Salesman" %>
+    <%@ page import="com.dgut.salesmanagementsystem.service.SalesmanService" %>
     <%
         User user = (User) session.getAttribute("user");
-        if (user == null || !"SalesManager".equals(user.getRole().getRole())) {
+        if (user == null || (!"SalesManager".equals(user.getRole().getRole()) && !"SalesMan".equals(user.getRole().getRole()))) {
             response.sendRedirect("../login.jsp");
             return;
+        }
+        // 判断角色是否为销售人员
+        boolean isSalesman = "SalesMan".equals(user.getRole().getRole());
+        int salesmanID = 0;
+        if(isSalesman) {
+            SalesmanService salesmanService = new SalesmanService();
+            Salesman salesman = salesmanService.getSalesmanByName(user.getUserName());
+
+            salesmanID = salesman.getSalesmanID();
         }
     %>
     <!DOCTYPE html>
@@ -21,17 +32,23 @@
     </head>
     <body>
     <header class="page-header">
+        <% if (!isSalesman) { %>
         <a href="../ContractController?pageNum=1" class="back-link">返回</a> <!-- 返回按钮 -->
+        <% } else { %>
+        <a href="../ContractController?pageNum=1&action=salesman&salesmanID=<%=salesmanID%>" class="back-link">返回</a> <!-- 返回按钮 -->
+        <% } %>
         <h1>采购清单管理 - 合同：<%= session.getAttribute("contractName") %></h1>
     </header>
 
     <main class="main-content">
+        <% if (!isSalesman) { %>
         <!-- 操作按钮 -->
         <div class="actions">
             <a href="add_purchase_list.jsp?contractID=<%= session.getAttribute("contractID") %>">
                 <button type="button">新增采购清单</button>
             </a>
         </div>
+        <% } %>
 
         <!-- 采购清单列表 -->
         <table class="purchase-list-table">
@@ -69,7 +86,9 @@
                 <td><%= PaymentStatus.getChineseStr(purchaseList.getPaymentStatus()) %></td>
                 <td colspan="2" class="action-buttons">
                     <a href="purchaseList_view.jsp?purchaseListID=<%= purchaseList.getPurchaseListID() %>">详情</a>
+                    <% if (!isSalesman) { %>
                     <a href="../PurchaseListController?action=pay&purchaseListID=<%= purchaseList.getPurchaseListID() %>" onclick='return confirm("确定要付款吗？");'>付款</a>
+                    <% } %>
                 </td>
             </tr>
             <%
@@ -92,6 +111,5 @@
                     <%= (currentPage == totalPages) ? "style='pointer-events: none; color: gray;'" : "" %>>下一页</a>
         </div>
     </main>
-
     </body>
     </html>
